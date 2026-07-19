@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Presidente por um Dia — Gabinete Econômico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400;600;800&family=Special+Elite&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1B2A41; --ink-2:#233a56; --parchment:#EFE6D3; --gold:#B8933F;
+  --crisis:#8C2F2F; --growth:#3F6B4F; --charcoal:#2A241C; --line:#cdbf98;
+  --divida-c:#4A6FA5; --desig-c:#7A4C7A; --inflacao-c:#2A241C; --swan:#5C3A21; --advisor:#1B2A41;
+}
+*{box-sizing:border-box;}
+body{ margin:0; min-height:100vh; background:radial-gradient(ellipse at top, var(--ink-2), var(--ink) 70%);
+  font-family:'Bitter', serif; color:var(--parchment); display:flex; flex-direction:column;
+  align-items:center; padding:24px 14px 0; }
+.masthead{ width:100%; max-width:660px; text-align:center; border-bottom:3px double var(--gold);
+  padding-bottom:12px; margin-bottom:18px; }
+.masthead h1{ font-weight:800; font-size:1.6rem; letter-spacing:1px; margin:0 0 4px; text-transform:uppercase; }
+.masthead .sub{ font-family:'JetBrains Mono', monospace; font-size:0.72rem; letter-spacing:2px;
+  color:var(--gold); text-transform:uppercase; }
+.masthead-row{ display:flex; align-items:center; justify-content:center; gap:10px; position:relative; }
+.mute-btn{ position:absolute; right:0; top:-2px; background:transparent; border:1px solid var(--gold);
+  color:var(--gold); border-radius:50%; width:30px; height:30px; cursor:pointer; font-size:0.85rem;
+  display:flex; align-items:center; justify-content:center; transition:background .12s ease; }
+.mute-btn:hover{ background:rgba(184,147,63,0.15); }
+.diff-badge{ position:absolute; left:0; top:-2px; font-family:'JetBrains Mono', monospace; font-size:0.62rem;
+  border:1px solid var(--gold); color:var(--gold); border-radius:12px; padding:5px 10px; letter-spacing:1px;
+  text-transform:uppercase; display:none; }
+.chart-wrap{ margin-bottom:16px; }
+.chart-legend{ display:flex; flex-wrap:wrap; gap:8px 14px; margin-top:8px; font-family:'JetBrains Mono', monospace; font-size:0.66rem; }
+.chart-legend span{ display:flex; align-items:center; gap:5px; }
+.chart-legend i{ width:10px; height:10px; border-radius:2px; display:inline-block; }
+.share-feedback{ font-family:'JetBrains Mono', monospace; font-size:0.7rem; color:var(--growth); text-align:center; margin-top:6px; min-height:1em; }
+.stage{ width:100%; max-width:660px; flex:1; }
+.card{ background:var(--parchment); color:var(--charcoal); border-radius:4px; padding:26px 22px;
+  box-shadow:0 12px 30px rgba(0,0,0,0.35); position:relative;
+  background-image:repeating-linear-gradient(var(--parchment) 0 27px, var(--line) 27px 28px);
+  background-size:100% 28px; opacity:0; animation:fadeSlideIn .5s ease forwards; }
+@keyframes fadeSlideIn{ 0%{ opacity:0; transform:translateY(14px); } 100%{ opacity:1; transform:translateY(0); } }
+.card::before{ content:""; position:absolute; inset:8px; border:1px solid rgba(42,36,28,0.15); pointer-events:none; }
+.eyebrow{ font-family:'JetBrains Mono', monospace; font-size:0.7rem; letter-spacing:2px; color:var(--crisis);
+  text-transform:uppercase; margin-bottom:6px; display:block; }
+.card h2{ font-weight:800; font-size:1.25rem; margin:0 0 12px; }
+.briefing{ font-family:'Special Elite', monospace; font-size:0.92rem; line-height:1.7; margin:0 0 18px; }
+.opt{ display:block; width:100%; text-align:left; background:var(--ink); color:var(--parchment);
+  border:2px solid var(--gold); border-radius:3px; padding:12px 16px 10px; margin-bottom:10px; cursor:pointer;
+  transition:transform .12s ease, background .12s ease; }
+.opt:hover{ background:var(--ink-2); transform:translateX(3px); }
+.opt:active{ transform:scale(0.98); }
+.opt .opt-name{ font-family:'Bitter',serif; font-weight:600; font-size:0.95rem; display:block; }
+.opt .opt-tag{ font-family:'JetBrains Mono', monospace; font-size:0.68rem; color:var(--gold); letter-spacing:0.3px; display:block; margin-top:4px; }
+.opt.disabled{ opacity:0.55; cursor:not-allowed; background:#3a3a3a; border-color:#777; }
+.opt.disabled:hover{ transform:none; background:#3a3a3a; }
+.opt.disabled .opt-tag{ color:#c98a8a; }
+.opt-warn{ font-family:'JetBrains Mono', monospace; font-size:0.62rem; color:#e2a1a1; display:block; margin-top:5px; letter-spacing:0.2px; }
+.btn.primary{ display:block; width:100%; text-align:center; background:var(--gold); color:var(--charcoal);
+  border:2px solid var(--charcoal); border-radius:3px; padding:12px 16px; font-weight:800; letter-spacing:0.5px;
+  cursor:pointer; margin-top:4px; }
+.btn.primary:hover{ background:#c9a44f; }
+.btn.ghost{ display:block; width:100%; text-align:center; background:transparent; color:var(--charcoal);
+  border:2px dashed rgba(42,36,28,0.4); border-radius:3px; padding:10px 16px; font-weight:600; letter-spacing:0.3px;
+  cursor:pointer; margin-top:10px; font-family:'JetBrains Mono', monospace; font-size:0.75rem; }
+.btn.ghost:hover{ background:rgba(42,36,28,0.06); }
+.btn.primary:disabled, .btn.ghost:disabled{ opacity:0.6; cursor:not-allowed; }
+.diff-pick{ display:flex; gap:12px; margin-top:6px; }
+.diff-opt{ flex:1; text-align:left; background:var(--ink); color:var(--parchment); border:2px solid var(--gold);
+  border-radius:3px; padding:14px 14px 12px; cursor:pointer; transition:transform .12s ease, background .12s ease; }
+.diff-opt:hover{ background:var(--ink-2); transform:translateY(-2px); }
+.diff-opt b{ display:block; font-size:0.95rem; margin-bottom:4px; }
+.diff-opt span{ font-family:'JetBrains Mono', monospace; font-size:0.68rem; color:var(--gold); line-height:1.5; display:block; }
+.diff-opt.selected{ background:var(--ink-2); box-shadow:0 0 0 2px var(--gold) inset; }
+.stamp-overlay{ position:fixed; inset:0; background:rgba(0,0,0,0.55); display:flex; align-items:center;
+  justify-content:center; z-index:50; opacity:0; pointer-events:none; }
+.stamp-overlay.show{ opacity:1; pointer-events:auto; }
+.stamp{ border:6px solid var(--crisis); color:var(--crisis); font-weight:800; text-transform:uppercase;
+  font-size:1.4rem; padding:14px 26px; border-radius:8px; transform:rotate(-8deg) scale(2); opacity:0;
+  text-align:center; background:rgba(140,47,47,0.06); }
+.stamp-overlay.show .stamp{ animation:thud .38s ease-out forwards; }
+@keyframes thud{ 0%{ transform:rotate(-8deg) scale(2.4); opacity:0; } 60%{ transform:rotate(-8deg) scale(0.92); opacity:1; } 100%{ transform:rotate(-8deg) scale(1); opacity:1; } }
+.delta-row{ display:flex; gap:8px; flex-wrap:wrap; margin:14px 0 16px; font-family:'JetBrains Mono', monospace; font-size:0.75rem; }
+.delta{ padding:4px 8px; border-radius:3px; background:rgba(42,36,28,0.07); }
+.delta.up{ color:var(--growth); font-weight:600; }
+.delta.down{ color:var(--crisis); font-weight:600; }
+.history-note{ border-left:3px solid var(--gold); padding:10px 12px; background:rgba(184,147,63,0.12);
+  font-size:0.85rem; line-height:1.6; margin-bottom:18px; }
+.history-note b{ color:var(--crisis); }
+.cross-note{ border-left:3px solid var(--divida-c); padding:10px 12px; background:rgba(74,111,165,0.12);
+  font-size:0.82rem; line-height:1.6; margin-bottom:14px; }
+.cross-note b{ color:var(--divida-c); }
+.progress{ font-family:'JetBrains Mono', monospace; font-size:0.68rem; color:var(--charcoal); opacity:0.6; margin-bottom:10px; }
+.progress-dots{ display:flex; gap:5px; margin-bottom:14px; }
+.prog-dot{ width:7px; height:7px; border-radius:50%; background:rgba(42,36,28,0.18); }
+.prog-dot.prog-done{ background:var(--growth); }
+.prog-dot.prog-current{ background:var(--crisis); transform:scale(1.3); }
+.hidden-hint{ font-family:'JetBrains Mono', monospace; font-size:0.65rem; color:var(--charcoal); opacity:0.55; margin:-6px 0 14px; font-style:italic; }
+.ticker-wrap{ width:100%; max-width:660px; overflow:hidden; background:var(--ink-2); border-top:1px solid var(--gold);
+  border-bottom:1px solid var(--gold); margin-top:18px; padding:8px 0; }
+.ticker{ display:flex; gap:32px; white-space:nowrap; animation:scroll 22s linear infinite;
+  font-family:'JetBrains Mono', monospace; font-size:0.76rem; }
+@keyframes scroll{ 0%{ transform:translateX(0); } 100%{ transform:translateX(-50%); } }
+.tick-item{ color:var(--parchment); opacity:0.9; }
+.tick-item .lbl{ color:var(--gold); margin-right:4px; }
+.tick-item.hidden-metric{ opacity:0.4; font-style:italic; }
+footer.spacer{ height:14px; }
+.final-title{ font-weight:800; font-size:1.45rem; color:var(--crisis); text-align:center; margin:4px 0 2px; }
+.final-sub{ font-family:'JetBrains Mono', monospace; font-size:0.72rem; text-align:center; color:var(--charcoal);
+  opacity:0.75; letter-spacing:1px; text-transform:uppercase; margin-bottom:14px; }
+.final-desc{ font-family:'Special Elite', monospace; font-size:0.88rem; line-height:1.7; margin-bottom:18px; }
+.bar-row{ margin-bottom:10px; }
+.bar-label{ display:flex; justify-content:space-between; font-family:'JetBrains Mono', monospace; font-size:0.72rem; margin-bottom:4px; }
+.bar-track{ height:9px; background:rgba(42,36,28,0.15); border-radius:5px; overflow:hidden; }
+.bar-fill{ height:100%; border-radius:5px; }
+.hist-list{ list-style:none; margin:0 0 18px; padding:0; }
+.hist-list li{ font-size:0.85rem; padding:8px 0; border-bottom:1px dashed rgba(42,36,28,0.2); display:flex; flex-direction:column; gap:2px; }
+.hist-list li:last-child{ border-bottom:none; }
+.hist-list .h-crisis{ font-family:'JetBrains Mono', monospace; font-size:0.66rem; color:var(--crisis); text-transform:uppercase; letter-spacing:1px; }
+.hist-list .h-choice{ font-weight:600; }
+.hist-list .h-swan{ font-family:'JetBrains Mono', monospace; font-size:0.66rem; color:var(--swan); text-transform:uppercase; letter-spacing:1px; }
+.swan-eyebrow{ color:var(--swan); }
+.swan-icon{ display:block; margin-bottom:6px; color:var(--swan); }
+.advisor-wrap{ position:absolute; top:-18px; right:0; left:0; z-index:5; display:flex; flex-direction:column;
+  align-items:flex-end; opacity:0; transform:translateY(6px) scale(0.9); animation:advisorIn .35s ease forwards;
+  max-width:100%; padding:0 10px; pointer-events:none; }
+.advisor-wrap .advisor-bubble{ pointer-events:auto; max-width:min(280px, 78vw); }
+@keyframes advisorIn{ 0%{ opacity:0; transform:translateY(6px) scale(0.9); } 100%{ opacity:1; transform:translateY(0) scale(1); } }
+.advisor-bubble{ background:var(--advisor); color:var(--parchment); border:2px solid var(--gold);
+  border-radius:10px 10px 2px 10px; padding:9px 12px; font-size:0.76rem; line-height:1.45;
+  box-shadow:0 6px 14px rgba(0,0,0,0.3); position:relative; }
+.advisor-name{ font-family:'JetBrains Mono', monospace; font-size:0.6rem; color:var(--gold); text-transform:uppercase;
+  letter-spacing:1px; display:block; margin-bottom:3px; }
+.advisor-close{ position:absolute; top:-9px; right:-9px; background:var(--crisis); color:#fff; border:none;
+  border-radius:50%; width:20px; height:20px; font-size:0.7rem; line-height:1; cursor:pointer; }
+.mp-input{ width:100%; padding:10px 12px; font-family:'JetBrains Mono', monospace; font-size:0.85rem;
+  border:2px solid rgba(42,36,28,0.3); border-radius:3px; background:#fbf7ec; color:var(--charcoal); margin-bottom:10px; }
+.mp-input.code{ text-transform:uppercase; letter-spacing:3px; text-align:center; }
+.mp-label{ font-family:'JetBrains Mono', monospace; font-size:0.68rem; text-transform:uppercase; letter-spacing:1px; opacity:0.65; display:block; margin-bottom:4px; }
+.room-code-display{ text-align:center; font-family:'JetBrains Mono', monospace; font-size:1.8rem; letter-spacing:8px;
+  font-weight:600; color:var(--crisis); border:2px dashed var(--crisis); border-radius:6px; padding:14px 8px; margin:12px 0 16px; }
+.player-list{ list-style:none; margin:0 0 16px; padding:0; }
+.player-list li{ font-size:0.85rem; padding:7px 10px; margin-bottom:6px; border-radius:3px; background:rgba(42,36,28,0.06);
+  display:flex; justify-content:space-between; align-items:center; }
+.player-list .p-host{ font-family:'JetBrains Mono', monospace; font-size:0.6rem; color:var(--gold); background:var(--ink); padding:2px 6px; border-radius:3px; }
+.vote-status{ font-family:'JetBrains Mono', monospace; font-size:0.72rem; text-align:center; color:var(--charcoal); opacity:0.7; margin:10px 0; }
+.tally-row{ margin-bottom:8px; }
+.tally-label{ display:flex; justify-content:space-between; font-size:0.78rem; margin-bottom:3px; font-weight:600; }
+.tally-track{ height:8px; background:rgba(42,36,28,0.12); border-radius:4px; overflow:hidden; }
+.tally-fill{ height:100%; background:var(--divida-c); border-radius:4px; }
+.mp-mode-tag{ font-family:'JetBrains Mono', monospace; font-size:0.65rem; color:var(--divida-c); letter-spacing:1px;
+  text-transform:uppercase; display:block; margin-bottom:6px; }
+.mp-error{ font-family:'JetBrains Mono', monospace; font-size:0.7rem; color:var(--crisis); text-align:center; margin:8px 0 0; min-height:1em; }
+.resume-banner{ border-left:3px solid var(--growth); padding:10px 12px; background:rgba(63,107,79,0.12);
+  font-size:0.8rem; line-height:1.5; margin-bottom:14px; }
+.mp-conn-banner{ position:fixed; left:50%; bottom:14px; transform:translateX(-50%); background:var(--crisis);
+  color:#fff; font-family:'JetBrains Mono', monospace; font-size:0.72rem; padding:8px 16px; border-radius:20px;
+  box-shadow:0 4px 14px rgba(0,0,0,0.35); z-index:60; display:none; max-width:90vw; text-align:center; }
+.mp-conn-banner.show{ display:block; }
+@media (prefers-reduced-motion: reduce){
+  .ticker{ animation:none; } .card{ animation:none; opacity:1; }
+  .stamp-overlay.show .stamp{ animation:none; opacity:1; transform:rotate(-8deg) scale(1); }
+  .advisor-wrap{ animation:none; opacity:1; transform:none; }
+}
+</style>
+</head>
+<body>
+<div class="masthead">
+  <div class="masthead-row">
+    <span class="diff-badge" id="diffBadge"></span>
+    <h1>Gabinete Econômico</h1>
+    <button class="mute-btn" id="muteBtn" onclick="toggleMute()" title="Ativar/desativar som">🔊</button>
+  </div>
+  <div class="sub">Presidente por um dia · 10 crises · edição complexa</div>
+</div>
+<div class="stage" id="stage"></div>
+<div class="ticker-wrap" id="tickerWrap" style="display:none">
+  <div class="ticker" id="ticker"></div>
+</div>
+<footer class="spacer"></footer>
+<div class="mp-conn-banner" id="mpConnBanner">Conexão instável — tentando reconectar…</div>
+<div class="stamp-overlay" id="stampOverlay">
+  <div class="stamp" id="stampText">DECIDIDO</div>
+</div>
+
+<script>
+/* ---------------------------------------------------------
+   ÁUDIO — efeitos sonoros sintetizados (sem arquivos externos)
+--------------------------------------------------------- */
+let audioCtx = null;
+let soundEnabled = true;
+function toggleMute(){
+  soundEnabled = !soundEnabled;
+  const btn = document.getElementById('muteBtn');
+  if(btn) btn.textContent = soundEnabled ? '🔊' : '🔇';
+  if(soundEnabled) beep({freq:600, duration:0.06, type:'sine', gain:0.05});
+}
+function getCtx(){
+  if(!audioCtx){
+    try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ audioCtx = null; }
+  }
+  return audioCtx;
+}
+function beep({freq=440, duration=0.12, type='sine', gain=0.08, delay=0}){
+  if(!soundEnabled) return;
+  const ctx = getCtx();
+  if(!ctx) return;
+  const osc = ctx.createOscillator();
+  const g = ctx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  g.gain.value = gain;
+  osc.connect(g);
+  g.connect(ctx.destination);
+  const t0 = ctx.currentTime + delay;
+  g.gain.setValueAtTime(gain, t0);
+  g.gain.exponentialRampToValueAtTime(0.001, t0 + duration);
+  osc.start(t0);
+  osc.stop(t0 + duration + 0.02);
+}
+function playClickSound(){
+  beep({freq:520, duration:0.08, type:'square', gain:0.05});
+  beep({freq:780, duration:0.06, type:'square', gain:0.03, delay:0.05});
+}
+function playStampSound(){
+  beep({freq:120, duration:0.18, type:'sawtooth', gain:0.12});
+  beep({freq:90, duration:0.22, type:'square', gain:0.08, delay:0.03});
+}
+function playEndingSound(good){
+  if(good){
+    beep({freq:523, duration:0.14, type:'triangle', gain:0.07});
+    beep({freq:659, duration:0.14, type:'triangle', gain:0.07, delay:0.12});
+    beep({freq:784, duration:0.22, type:'triangle', gain:0.08, delay:0.24});
+  } else {
+    beep({freq:200, duration:0.22, type:'sawtooth', gain:0.09});
+    beep({freq:150, duration:0.3, type:'sawtooth', gain:0.09, delay:0.18});
+  }
+}
+function playSwanSound(){
+  beep({freq:340, duration:0.12, type:'sawtooth', gain:0.08});
+  beep({freq:260, duration:0.16, type:'sawtooth', gain:0.08, delay:0.1});
+  beep({freq:180, duration:0.22, type:'sawtooth', gain:0.08, delay:0.22});
+}
+function playAdvisorSound(){
+  beep({freq:700, duration:0.05, type:'sine', gain:0.04});
+  beep({freq:900, duration:0.05, type:'sine', gain:0.04, delay:0.07});
+}
+
+/* ---------------------------------------------------------
+   ESTADO
+--------------------------------------------------------- */
+const baseState = { pib:100, desemprego:12, inflacao:5, confianca:50, divida:60, desigualdade:50 };
+let state = {...baseState};
+let history = [];
+let timeline = [];
+let flags = {};
+let difficulty = 'facil';
+const HIDDEN_METRICS = ['inflacao','divida','desigualdade'];
+
+/* ---------------------------------------------------------
+   MULTIPLAYER — "Gabinete Coletivo"
+--------------------------------------------------------- */
+let mpRoomCode = null;
+let mpPlayerName = null;
+let mpIsHost = false;
+let mpMeta = null;
+let mpState = null;
+let mpMyVoteRound = null;
+let mpPollTimer = null;
+let mpConsecutiveFails = 0;
+const MP_FAIL_THRESHOLD = 2;
+function mpShowConnError(show){
+  const el = document.getElementById('mpConnBanner');
+  if(el) el.classList.toggle('show', !!show);
+}
+const MP_ROUND_TIMEOUT_MS = 25000;
+function applyDeltasToObj(obj, deltas){
+  obj.pib = clamp(obj.pib + (deltas.pib || 0), -50, 300);
+  obj.desemprego = clamp(obj.desemprego + (deltas.desemprego||0), 0, 100);
+  obj.inflacao += deltas.inflacao || 0;
+  obj.confianca = clamp(obj.confianca + (deltas.confianca||0), 0, 100);
+  obj.divida = clamp(obj.divida + (deltas.divida||0), 0, 300);
+  obj.desigualdade = clamp(obj.desigualdade + (deltas.desigualdade||0), 0, 100);
+}
+async function storGet(key){
+  try{
+    const r = await fetch(`/api/kv/${encodeURIComponent(key)}`);
+    if(!r.ok) return null; // 404 = chave não existe
+    const data = await r.json();
+    return data.value; // já vem como objeto puro, sem precisar de JSON.parse
+  }catch(e){ return null; }
+}
+async function storSet(key, value){
+  try{
+    const r = await fetch(`/api/kv/${encodeURIComponent(key)}`, {
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ value })
+    });
+    return r.ok ? await r.json() : null;
+  }catch(e){ return null; }
+}
+async function storList(prefix){
+  try{
+    const r = await fetch(`/api/kv?prefix=${encodeURIComponent(prefix)}`);
+    if(!r.ok) return [];
+    const data = await r.json();
+    return data.keys || [];
+  }catch(e){ return []; }
+}
+async function storDelete(key){
+  try{ await fetch(`/api/kv/${encodeURIComponent(key)}`, { method:'DELETE' }); }
+  catch(e){ /* best-effort */ }
+}
+function roomMetaKey(code){ return `room:${code}:meta`; }
+function roomStateKey(code){ return `room:${code}:state`; }
+function roomVoteKey(code, roundIdx, name){ return `room:${code}:vote:${roundIdx}:${name}`; }
+function roomVotePrefix(code, roundIdx){ return `room:${code}:vote:${roundIdx}:`; }
+function roomPlayerKey(code, name){ return `room:${code}:player:${name}`; }
+function roomPlayerPrefix(code){ return `room:${code}:player:`; }
+function mpGenCode(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for(let i=0;i<5;i++) code += chars[Math.floor(Math.random()*chars.length)];
+  return code;
+}
+function mpStopPolling(){ if(mpPollTimer){ clearInterval(mpPollTimer); mpPollTimer = null; } }
+async function mpGetPlayersFull(code){
+  const keys = await storList(roomPlayerPrefix(code));
+  const results = await Promise.all(keys.map(k => storGet(k)));
+  const players = results.filter(p => p && p.name);
+  players.sort((a,b) => (a.joinedAt||0) - (b.joinedAt||0));
+  return players;
+}
+async function mpGetPlayers(code){
+  const full = await mpGetPlayersFull(code);
+  return full.map(p => p.name).sort((a,b) => a.localeCompare(b));
+}
+const MP_ROOM_TTL_MS = 24 * 60 * 60 * 1000;
+async function mpCleanupOldRooms(){
+  try{
+    const metaKeys = await storList('room:');
+    const staleMetaKeys = metaKeys.filter(k => k.endsWith(':meta')).slice(0, 25);
+    for(const mk of staleMetaKeys){
+      const meta = await storGet(mk);
+      if(!meta || !meta.createdAt || (Date.now() - meta.createdAt) < MP_ROOM_TTL_MS) continue;
+      const code = mk.split(':')[1];
+      const relatedKeys = await storList(`room:${code}:`);
+      for(const rk of relatedKeys){ await storDelete(rk); }
+    }
+  }catch(e){ /* limpeza é best-effort */ }
+}
+const MP_HOST_TIMEOUT_MS = 12000;
+
+const scenarios = [
+  { id:1, data:"Outubro de 1929 — Nova York", eyebrow:"Crise 1 de 10 · O Pânico",
+    briefing:"As bolsas de valores despencam depois de anos de especulação com crédito fácil. Bancos pequenos começam a quebrar e o pânico se espalha pela população, que corre para sacar suas economias.",
+    options:[
+      { name:"Deixar o mercado se ajustar sozinho", tag:"Menos dívida, muito mais sofrimento social",
+        deltas:{pib:-30, desemprego:20, inflacao:-3, confianca:-20, divida:-5, desigualdade:15}, sets:['marketLiberal'],
+        note:"Foi essa a resposta inicial dos EUA em 1929. Sem intervenção, o desemprego chegou perto de 30% e o PIB caiu quase pela metade em poucos anos." },
+      { name:"Criar obras públicas, seguro-desemprego e regular bancos", tag:"Mais dívida pública, mais confiança e igualdade",
+        deltas:{pib:-10, desemprego:5, inflacao:1, confianca:15, divida:20, desigualdade:-10}, sets:['stateInterventionist'],
+        note:"Esse caminho lembra o New Deal de Roosevelt, lançado em 1933: o Estado passou a empregar diretamente e regular o setor financeiro para conter a queda." },
+      { name:"Cortar gastos públicos para equilibrar o orçamento", tag:"Menos dívida, mas colapso social maior",
+        deltas:{pib:-25, desemprego:18, inflacao:-2, confianca:-15, divida:-15, desigualdade:10}, sets:['fiscalHawk'],
+        note:"Cortar gastos em meio a uma crise reduz ainda mais a demanda da economia — um erro de política econômica repetido em várias crises históricas." }
+    ] },
+  { id:2, data:"1971 — Washington D.C.", eyebrow:"Crise 2 de 10 · O Fim do Ouro",
+    briefing:"O acordo de Bretton Woods, que garantia a conversão do dólar em ouro, está insustentável: as reservas de ouro dos EUA não acompanham mais a quantidade de dólares em circulação pelo mundo.",
+    options:[
+      { name:"Manter a conversibilidade do dólar em ouro a todo custo", tag:"Defende a promessa, mina a confiança",
+        deltas:{pib:-5, desemprego:2, inflacao:0, confianca:-10, divida:5, desigualdade:0},
+        note:"Sustentar essa promessa era cada vez mais difícil: os países estrangeiros detinham mais dólares do que os EUA tinham em ouro para trocar." },
+      { name:"Abandonar o lastro em ouro e deixar o dólar flutuar", tag:"Mais liberdade monetária, mais inflação",
+        deltas:{pib:-5, desemprego:1, inflacao:8, confianca:5, divida:0, desigualdade:0},
+        note:"Foi o que aconteceu de fato em 1971. O dólar deixou de ter qualquer referência de valor além de si mesmo, e as moedas passaram a flutuar." },
+      { name:"Elevar fortemente a taxa de juros para defender a moeda", tag:"Moeda forte, emprego fraco",
+        deltas:{pib:-8, desemprego:10, inflacao:-5, confianca:2, divida:3, desigualdade:5},
+        note:"Em 1979, os EUA de fato elevaram os juros, reforçando o dólar como moeda de referência internacional, mas jogando o mercado de trabalho em crise." }
+    ],
+    crossEffects(ctx){
+      const mods = {};
+      if(ctx.flags.fiscalHawk){ mods[2] = { extraDeltas:{desemprego:-2, confianca:3},
+        note:"Seu gabinete já provou em 1929 que aguenta o desgaste de um ajuste duro — a defesa da moeda encontra menos resistência política agora." }; }
+      if(ctx.flags.stateInterventionist){ mods[1] = { extraDeltas:{confianca:4},
+        note:"A população já confia no seu histórico de intervenções bem-sucedidas, o que suaviza a reação ao fim do padrão-ouro." }; }
+      return mods;
+    } },
+  { id:3, data:"1973 e 1979 — Crise mundial", eyebrow:"Crise 3 de 10 · Choques do Petróleo",
+    briefing:"Conflitos no Oriente Médio provocam embargos e disparada nos preços do petróleo. Filas se formam nos postos de combustível e o custo de vida sobe rapidamente em todo o mundo.",
+    options:[
+      { name:"Subsidiar combustíveis para proteger a população", tag:"Alivia o povo, endivida o Estado",
+        deltas:{pib:-5, desemprego:3, inflacao:-3, confianca:10, divida:15, desigualdade:-5},
+        note:"Diversos governos adotaram subsídios e controles de preço durante os choques do petróleo, tentando proteger a população do impacto imediato." },
+      { name:"Deixar os preços subirem livremente", tag:"Menos gasto público, mais inflação e revolta",
+        deltas:{pib:-10, desemprego:8, inflacao:12, confianca:-15, divida:0, desigualdade:10},
+        note:"Sem controle de preços, a inflação disparou nos anos 1970 em várias economias — o fenômeno da estagflação: inflação alta com crescimento baixo." },
+      { name:"Investir pesado em fontes alternativas de energia", tag:"Novos empregos, mais dívida no curto prazo",
+        deltas:{pib:-3, desemprego:-2, inflacao:4, confianca:5, divida:10, desigualdade:-3},
+        note:"Investimentos em fontes alternativas de energia ganharam força justamente como resposta de longo prazo aos choques do petróleo dessa década." }
+    ],
+    crossEffects(ctx){
+      const mods = {};
+      if(ctx.state.divida > 90){ mods[0] = { extraDeltas:{divida:8},
+        note:"Com a dívida já pressionada, subsidiar combustíveis exige tomar crédito em condições piores do que as de um governo mais saudável fiscalmente." }; }
+      return mods;
+    } },
+  { id:4, data:"Anos 1980 — Washington e Londres", eyebrow:"Crise 4 de 10 · Ascensão do Neoliberalismo",
+    briefing:"O Estado de bem-estar social ficou caro e, segundo críticos, pouco competitivo. Empresas pressionam por menos regulação e sindicatos mais fracos para reanimar seus lucros.",
+    options:[
+      { name:"Desregular mercados e enfraquecer sindicatos", tag:"Crescimento forte, desigualdade dispara",
+        deltas:{pib:15, desemprego:-5, inflacao:-2, confianca:-10, divida:-5, desigualdade:25}, sets:['marketLiberal'],
+        note:"Esse foi o caminho de Reagan e Thatcher nos anos 1980: reduzir a regulação e o poder sindical para reanimar os lucros das empresas, dando início à era neoliberal." },
+      { name:"Manter o Estado de bem-estar social como está", tag:"Mais igualdade, mais gasto público",
+        deltas:{pib:-5, desemprego:3, inflacao:2, confianca:10, divida:10, desigualdade:-10}, sets:['stateInterventionist'],
+        note:"Manter o Estado de bem-estar como nos anos dourados do pós-guerra ficou cada vez mais caro diante da nova economia globalizada." },
+      { name:"Fazer uma reforma mista e gradual", tag:"Meio-termo sem grandes ganhos nem perdas",
+        deltas:{pib:5, desemprego:0, inflacao:0, confianca:0, divida:0, desigualdade:5},
+        note:"Reformas graduais foram cogitadas em alguns países, mas a história mostra que o neoliberalismo avançou de forma bem mais radical do que meio-termos." }
+    ],
+    crossEffects(ctx){
+      const mods = {};
+      if(ctx.flags.marketLiberal){ mods[0] = { extraDeltas:{confianca:5, pib:5},
+        note:"Seu gabinete já vem de escolhas de livre mercado desde 1929 — a desregulação agora soa como continuidade natural, e os investidores reagem com mais confiança." }; }
+      if(ctx.flags.stateInterventionist){ mods[1] = { extraDeltas:{divida:-6, confianca:5},
+        note:"A máquina de bem-estar social que você já vem sustentando desde o New Deal opera com mais eficiência, reduzindo o custo fiscal de mantê-la." }; }
+      if(ctx.flags.fiscalHawk){ mods[2] = { extraDeltas:{confianca:3},
+        note:"Seu histórico de disciplina fiscal dá credibilidade extra a uma reforma de meio-termo, que parece mais equilibrada vinda do seu gabinete." }; }
+      return mods;
+    } },
+  { id:5, data:"Cidade do México — 1982", eyebrow:"Crise 5 de 10 · A Década Perdida",
+    briefing:"Os juros americanos dispararam e a dívida externa contraída em dólares por países latino-americanos ficou impagável. Seu país anuncia que não tem mais reservas para honrar seus compromissos.",
+    options:[
+      { name:"Aceitar o ajuste fiscal duro exigido pelo FMI", tag:"Reduz a dívida, aprofunda a recessão interna",
+        deltas:{pib:-14, desemprego:9, inflacao:-4, confianca:-5, divida:-15, desigualdade:12}, sets:['imfDisciplined'],
+        note:"Vários países latino-americanos aceitaram pacotes de ajuste do FMI nos anos 1980, cortando gastos sociais para conseguir voltar a acessar crédito." },
+      { name:"Declarar moratória e suspender os pagamentos", tag:"Alívio imediato, isolamento financeiro internacional",
+        deltas:{pib:-10, desemprego:7, inflacao:6, confianca:-12, divida:-8, desigualdade:5}, sets:['defaultHistory'],
+        note:"O México chegou a declarar que não podia pagar sua dívida em 1982, um choque que fechou as portas do crédito internacional por anos." },
+      { name:"Rolar a dívida com novos empréstimos para ganhar tempo", tag:"Sem dor imediata, problema maior mais à frente",
+        deltas:{pib:-4, desemprego:3, inflacao:5, confianca:2, divida:22, desigualdade:6},
+        note:"Adiar o ajuste tomando novos empréstimos evitou o choque imediato, mas empurrou o problema para o que ficou conhecido como a 'década perdida' latino-americana." }
+    ],
+    crossEffects(ctx){
+      const mods = {};
+      if(ctx.state.divida >= 95){ mods[2] = { disabled:true,
+        note:"Sua dívida já está tão pressionada que nenhum credor topa rolar mais compromissos sem garantias — essa opção está fechada." }; }
+      return mods;
+    } },
+  { id:6, data:"1997 — Sudeste Asiático", eyebrow:"Crise 6 de 10 · Os Tigres Cambiam",
+    briefing:"Os chamados Tigres Asiáticos atrelaram suas moedas ao dólar para sustentar acordos comerciais com o Japão. Com o dólar se valorizando, essas economias perdem competitividade e suas reservas ficam sob pressão.",
+    options:[
+      { name:"Manter o câmbio fixo mesmo sem reservas suficientes", tag:"Colapso cambial à vista",
+        deltas:{pib:-20, desemprego:12, inflacao:3, confianca:-15, divida:10, desigualdade:10},
+        note:"Foi o que ocorreu em boa parte da região: sem reservas para sustentar a paridade, as moedas colapsaram, arrastando também a economia japonesa." },
+      { name:"Buscar socorro do FMI e desvalorizar de forma controlada", tag:"Salva o câmbio, aumenta a dívida externa",
+        deltas:{pib:-8, desemprego:5, inflacao:2, confianca:-5, divida:25, desigualdade:5}, sets:['imfDisciplined'],
+        note:"Resgates internacionais reduzem o choque imediato, mas costumam vir com exigências severas de ajuste fiscal e endividamento externo." },
+      { name:"Deixar a moeda flutuar livremente desde o início", tag:"Ajuste mais suave, sem drama cambial",
+        deltas:{pib:-5, desemprego:3, inflacao:4, confianca:2, divida:0, desigualdade:0},
+        note:"Um câmbio flutuante desde o começo teria evitado boa parte da pressão acumulada, mas exigiria abrir mão do acordo cambial com o Japão." }
+    ],
+    crossEffects(ctx){
+      const mods = {};
+      if(ctx.flags.marketLiberal){ mods[0] = { extraDeltas:{confianca:-6, desigualdade:6},
+        note:"Anos de desregulação prévia deixaram o sistema financeiro mais exposto — o colapso cambial atinge o país com força ainda maior." }; }
+      if(ctx.flags.defaultHistory){ mods[1] = { extraDeltas:{divida:6},
+        note:"Sua moratória anterior encareceu o crédito: o resgate do FMI vem com juros mais duros desta vez." }; }
+      return mods;
+    } },
+  { id:7, data:"2000–2001 — Wall Street", eyebrow:"Crise 7 de 10 · A Bolha da Nova Economia",
+    briefing:"Empresas '.com' associadas à internet e à tecnologia atingem valores de mercado desconectados de seus lucros reais. Analistas comemoram uma 'Nova Economia' que não pararia de crescer.",
+    options:[
+      { name:"Deixar a bolha estourar sem intervir", tag:"O mercado se corrige, mas dói",
+        deltas:{pib:-15, desemprego:8, inflacao:-2, confianca:-10, divida:0, desigualdade:5},
+        note:"Entre 2000 e 2001, trilhões de dólares em ações de empresas de tecnologia desapareceram da bolsa quando a bolha da 'Nova Economia' estourou." },
+      { name:"Cortar juros abruptamente para sustentar o mercado", tag:"Salva investidores, alimenta desigualdade",
+        deltas:{pib:-5, desemprego:3, inflacao:3, confianca:5, divida:5, desigualdade:10},
+        note:"O Federal Reserve de fato reagiu cortando juros para conter os efeitos da quebra das empresas '.com', sustentando o mercado financeiro." },
+      { name:"Regular o mercado de ações de tecnologia", tag:"Menos especulação, crescimento mais lento",
+        deltas:{pib:-10, desemprego:5, inflacao:0, confianca:0, divida:0, desigualdade:-5},
+        note:"Uma regulação mais rígida do mercado acionário de tecnologia poderia ter reduzido a euforia especulativa, mas não foi o caminho escolhido na época." }
+    ],
+    crossEffects(ctx){
+      const mods = {};
+      if(ctx.flags.fiscalHawk){ mods[0] = { extraDeltas:{confianca:4},
+        note:"Seu histórico de disciplina fiscal desde 1929 dá credibilidade a deixar o mercado se corrigir sozinho, sem gerar pânico adicional na população." }; }
+      if(ctx.state.desigualdade > 60){ mods[1] = { extraDeltas:{desigualdade:6},
+        note:"Com a desigualdade já elevada, socorrer investidores via corte de juros amplia ainda mais a distância entre quem tem ativos financeiros e quem não tem." }; }
+      if(ctx.flags.stateInterventionist){ mods[2] = { extraDeltas:{confianca:4},
+        note:"Seu histórico de regulação desde o New Deal torna crível uma resposta regulatória agora — a população confia que o Estado sabe conduzir esse tipo de ajuste." }; }
+      return mods;
+    } },
+  { id:8, data:"Setembro de 2008 — Wall Street", eyebrow:"Crise 8 de 10 · Subprime",
+    briefing:"Um grande banco de investimento entra em processo de falência. Créditos hipotecários de alto risco, revendidos em cadeias complexas por todo o sistema financeiro, contaminam bancos ao redor do mundo.",
+    options:[
+      { name:"Resgatar os bancos com dinheiro público", tag:"Salva o sistema, endivida o país",
+        deltas:{pib:-5, desemprego:3, inflacao:1, confianca:-8, divida:30, desigualdade:15},
+        note:"Foi a resposta predominante em 2008: o Estado interveio diretamente para evitar o colapso do sistema financeiro, algo impensável em 1929." },
+      { name:"Deixar os bancos quebrarem sem intervenção", tag:"Sem resgate, efeito dominó total",
+        deltas:{pib:-25, desemprego:15, inflacao:-2, confianca:-25, divida:0, desigualdade:10},
+        note:"Sem resgate, o efeito dominó no sistema financeiro global poderia ter sido ainda mais devastador do que em 1929." },
+      { name:"Resgate parcial com regulação forte do setor financeiro", tag:"Equilíbrio entre punir e proteger",
+        deltas:{pib:-10, desemprego:6, inflacao:0, confianca:5, divida:15, desigualdade:-5},
+        note:"Uma resposta mista foi defendida por muitos economistas: conter o colapso imediato sem deixar de tratar as causas estruturais do risco excessivo." }
+    ],
+    crossEffects(ctx){
+      const mods = {};
+      if(ctx.state.divida > 110){ mods[0] = { extraDeltas:{divida:10, confianca:-4},
+        note:"Os mercados já desconfiam da sua capacidade de pagar: resgatar os bancos agora custa juros mais altos e ainda mais desconfiança." }; }
+      return mods;
+    } },
+  { id:9, data:"2010 — Atenas", eyebrow:"Crise 9 de 10 · A Crise do Euro",
+    briefing:"Seu país revela que o déficit fiscal é muito maior do que havia declarado. Sem moeda própria para desvalorizar ou imprimir, os mercados passam a cobrar juros impagáveis para financiar a dívida.",
+    options:[
+      { name:"Aceitar o resgate da Troika com austeridade severa", tag:"Mantém a moeda comum, aprofunda a recessão e o desemprego",
+        deltas:{pib:-12, desemprego:14, inflacao:-3, confianca:-10, divida:-10, desigualdade:14},
+        note:"A Grécia aceitou sucessivos pacotes de resgate atrelados a cortes profundos em pensões, salários e serviços públicos, gerando anos de recessão." },
+      { name:"Abandonar a moeda comum e voltar à moeda nacional", tag:"Recupera autonomia monetária, choque cambial imediato",
+        deltas:{pib:-18, desemprego:10, inflacao:15, confianca:-8, divida:-20, desigualdade:8},
+        note:"Uma saída do euro (o chamado 'Grexit') permitiria desvalorizar a moeda para recuperar competitividade, mas geraria um choque inflacionário e institucional imenso." },
+      { name:"Renegociar a dívida com perdão parcial aos credores", tag:"Alívio real, mas exige credores dispostos a ceder",
+        deltas:{pib:-7, desemprego:6, inflacao:0, confianca:-2, divida:-25, desigualdade:2},
+        note:"Um perdão parcial da dívida (haircut) foi parte da solução real aplicada à Grécia em 2012, embora insuficiente para evitar anos de austeridade adicional." }
+    ],
+    crossEffects(ctx){
+      const mods = {};
+      if(ctx.flags.imfDisciplined){ mods[0] = { extraDeltas:{desemprego:-3, confianca:4},
+        note:"Sua população já atravessou um ajuste do FMI antes: a austeridade dói menos em termos de confiança do que doeria para um país sem esse histórico." }; }
+      else { mods[0] = { extraDeltas:{confianca:-4},
+        note:"Sem experiência prévia com ajustes duros, a austeridade agora choca ainda mais a opinião pública." }; }
+      if(ctx.flags.defaultHistory){ mods[2] = { extraDeltas:{divida:5},
+        note:"Seu histórico de moratória torna os credores mais relutantes em aceitar perdão parcial sem exigir garantias adicionais." }; }
+      return mods;
+    } },
+  { id:10, data:"Março de 2020 — Todo o mundo", eyebrow:"Crise 10 de 10 · A Pandemia",
+    briefing:"Uma pandemia global obriga o fechamento de atividades não essenciais. Cadeias produtivas travam, empresas fecham as portas e milhões de trabalhadores ficam sem renda de uma hora para outra.",
+    options:[
+      { name:"Lockdown rígido com auxílio emergencial amplo", tag:"Protege vidas e renda, explode a dívida pública",
+        deltas:{pib:-18, desemprego:6, inflacao:6, confianca:12, divida:35, desigualdade:-5},
+        note:"Muitos países combinaram fechamentos rígidos com programas emergenciais de renda, evitando um colapso social imediato ao custo de dívida recorde." },
+      { name:"Reabrir a economia rapidamente, priorizando a atividade", tag:"Menos queda no PIB, mais contágio e insegurança",
+        deltas:{pib:-6, desemprego:10, inflacao:3, confianca:-15, divida:8, desigualdade:10},
+        note:"Alguns governos optaram por reabrir cedo para proteger empregos e produção, mas enfrentaram maior desconfiança pública e pressão sobre os sistemas de saúde." },
+      { name:"Lockdown seletivo com auxílio limitado a quem mais precisa", tag:"Meio-termo caro em todas as frentes",
+        deltas:{pib:-12, desemprego:9, inflacao:4, confianca:-2, divida:18, desigualdade:4},
+        note:"Uma resposta intermediária tentou equilibrar contenção do vírus, atividade econômica e gasto público, sem resolver plenamente nenhuma das três frentes." }
+    ],
+    crossEffects(ctx){
+      const mods = {};
+      if(ctx.state.divida >= 130){ mods[0] = { disabled:true,
+        note:"Sua dívida acumulada já assusta o mercado de crédito: ninguém financia um auxílio emergencial amplo nesse tamanho agora." }; }
+      if(ctx.flags.imfDisciplined){ mods[2] = { extraDeltas:{confianca:4},
+        note:"A população já atravessou ajustes fiscais duros antes; um lockdown seletivo com auxílio limitado gera menos revolta do que geraria sem esse histórico." }; }
+      if(ctx.flags.marketLiberal){ mods[1] = { extraDeltas:{confianca:-5},
+        note:"Décadas de discurso de mercado livre tornam a reabertura rápida vista com desconfiança, como se o lucro estivesse sendo priorizado sobre vidas." }; }
+      return mods;
+    } }
+];
+
+const SWAN_ICONS = {
+  drought: `<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="9" r="3.2"/><path d="M12 3v1.4M12 12.6V14M5.5 9H7M17 9h1.5M7.3 4.3l1 1M15.7 4.3l-1 1" stroke-linecap="round"/><path d="M5 20c1.6-2.6 3.4-2.6 5 0M9.5 20c1.6-2.6 3.4-2.6 5 0M14 20c1.6-2.6 3.4-2.6 5 0" stroke-linecap="round"/></svg>`,
+  scandal: `<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5" stroke-linecap="round"/><circle cx="12" cy="16.3" r="1" fill="currentColor" stroke="none"/></svg>`,
+  favor: `<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M8 13l4-4 4 4M12 9v7" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  bankrun: `<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 10l8-5 8 5" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10v8M9 10v8M15 10v8M19 10v8" stroke-linecap="round"/><path d="M3 18h18" stroke-linecap="round"/></svg>`,
+  tech: `<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M13 3L5 14h5l-1 7 8-11h-5l1-7z" stroke-linejoin="round"/></svg>`,
+  disaster: `<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 9c1.6-2 3.4-2 5 0s3.4 2 5 0 3.4-2 5 0" stroke-linecap="round"/><path d="M3 14.5c1.6-2 3.4-2 5 0s3.4 2 5 0 3.4-2 5 0" stroke-linecap="round"/><path d="M3 20c1.6-2 3.4-2 5 0s3.4 2 5 0 3.4-2 5 0" stroke-linecap="round"/></svg>`,
+  speculation: `<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 19V13M9 19V9M14 19v-7M19 19V5" stroke-linecap="round"/><path d="M4 19h15" stroke-linecap="round"/></svg>`,
+  strikes: `<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="9" y="10" width="6" height="9" rx="1.5"/><circle cx="12" cy="6.5" r="3.5"/></svg>`
+};
+const swanEvents = [
+  { icon:"drought", title:"Quebra de Safra Inesperada",
+    text:"Uma seca severa destrói parte da produção agrícola do país, encarecendo alimentos e pressionando o orçamento das famílias.",
+    deltas:{inflacao:4, confianca:-4, pib:-2},
+    responses:[ { label:"Liberar estoques e subsidiar alimentos", extraDeltas:{divida:4, confianca:3} },
+      { label:"Deixar o mercado se reequilibrar sozinho", extraDeltas:{confianca:-2, inflacao:2} } ] },
+  { icon:"scandal", title:"Escândalo de Corrupção",
+    text:"Um escândalo envolvendo autoridades do governo vaza para a imprensa, minando a confiança pública nas instituições.",
+    deltas:{confianca:-10, desigualdade:2},
+    responses:[ { label:"Abrir investigação independente e afastar envolvidos", extraDeltas:{confianca:4, divida:1} },
+      { label:"Minimizar publicamente e seguir em frente", extraDeltas:{confianca:-5} } ] },
+  { icon:"favor", title:"Choque Externo Favorável",
+    text:"Uma alta inesperada no preço de uma commodity que o país exporta injeta divisas extras nos cofres públicos.",
+    deltas:{pib:4, divida:-6, confianca:3},
+    responses:[ { label:"Usar o excedente para abater ainda mais dívida", extraDeltas:{divida:-4} },
+      { label:"Usar o excedente para gasto social imediato", extraDeltas:{confianca:4, desigualdade:-2, divida:2} } ] },
+  { icon:"bankrun", title:"Corrida Bancária Localizada",
+    text:"Rumores sobre a saúde de um banco regional provocam filas de correntistas querendo sacar seus depósitos.",
+    deltas:{confianca:-6, divida:4},
+    responses:[ { label:"Garantir os depósitos com fundo público", extraDeltas:{divida:5, confianca:4} },
+      { label:"Deixar o banco resolver sozinho", extraDeltas:{confianca:-4, pib:-2} } ] },
+  { icon:"tech", title:"Avanço Tecnológico Inesperado",
+    text:"Uma nova tecnologia adotada rapidamente por empresas locais eleva a produtividade em vários setores.",
+    deltas:{pib:6, desemprego:-2},
+    responses:[ { label:"Investir para difundir a tecnologia rapidamente", extraDeltas:{pib:3, divida:2} },
+      { label:"Deixar o mercado adotar no seu próprio ritmo", extraDeltas:{desigualdade:2} } ] },
+  { icon:"disaster", title:"Desastre Natural",
+    text:"Um desastre natural de grandes proporções atinge uma região economicamente importante, exigindo reconstrução urgente.",
+    deltas:{pib:-6, divida:8, confianca:-3},
+    responses:[ { label:"Reconstrução acelerada com recursos federais", extraDeltas:{divida:6, confianca:3} },
+      { label:"Reconstrução gradual, sem novo endividamento", extraDeltas:{confianca:-3, pib:-2} } ] },
+  { icon:"speculation", title:"Euforia Especulativa Temporária",
+    text:"Investidores internacionais entram em massa no mercado local em busca de retornos rápidos, inflando ativos por um tempo.",
+    deltas:{pib:3, inflacao:2, desigualdade:3},
+    responses:[ { label:"Esfriar o mercado com regulação preventiva", extraDeltas:{desigualdade:-2, pib:-1} },
+      { label:"Deixar a euforia seguir seu curso", extraDeltas:{desigualdade:2, inflacao:1} } ] },
+  { icon:"strikes", title:"Onda de Greves Gerais",
+    text:"Categorias de trabalhadores organizam greves simultâneas cobrando reajustes salariais e melhores condições.",
+    deltas:{pib:-3, confianca:-2, desigualdade:-2},
+    responses:[ { label:"Negociar reajustes com as categorias", extraDeltas:{confianca:3, divida:2} },
+      { label:"Manter posição firme sem concessões", extraDeltas:{confianca:-3, desigualdade:2} } ] }
+];
+const SWAN_CHANCE = 0.35;
+const SWAN_CHANCE_DIFICIL = 0.55;
+const DIFICIL_DELTA_MULT = 1.25;
+function scaleDeltasForDifficulty(deltas){
+  if(difficulty !== 'dificil') return deltas;
+  const scaled = {};
+  for(const k in deltas){ scaled[k] = deltas[k] * DIFICIL_DELTA_MULT; }
+  return scaled;
+}
+function currentSwanChance(){ return difficulty === 'dificil' ? SWAN_CHANCE_DIFICIL : SWAN_CHANCE; }
+
+const advisors = [ { name:"Ministro da Economia" }, { name:"Representante do FMI" }, { name:"Voz da População" } ];
+function getAdvisorAdvice(){
+  const s = state;
+  const risky = [];
+  if(s.divida > 100) risky.push({ persona:1, text:"A dívida pública já está em nível preocupante. Tem certeza de que quer arriscar mais endividamento agora?" });
+  if(s.desigualdade > 65) risky.push({ persona:2, text:"As ruas estão tensas com tanta desigualdade. Uma decisão que ignore isso pode custar caro politicamente." });
+  if(s.confianca < 25) risky.push({ persona:0, text:"A confiança no governo está no limite. Talvez seja hora de uma escolha que traga alívio imediato à população." });
+  if(s.inflacao > 20) risky.push({ persona:1, text:"A inflação já corrói salários. Cuidado com decisões que joguem ainda mais lenha nessa fogueira." });
+  if(s.desemprego > 20) risky.push({ persona:2, text:"Muita gente sem emprego está perdendo a paciência. Tem certeza da direção que vai tomar?" });
+  if(risky.length === 0) return null;
+  const pick = risky[Math.floor(Math.random()*risky.length)];
+  return { name: advisors[pick.persona].name, text: pick.text };
+}
+function renderAdvisor(){
+  const advice = getAdvisorAdvice();
+  if(!advice) return '';
+  setTimeout(playAdvisorSound, 250);
+  return `
+  <div class="advisor-wrap" id="advisorWrap">
+    <div class="advisor-bubble">
+      <button class="advisor-close" onclick="dismissAdvisor()" title="Dispensar">×</button>
+      <span class="advisor-name">${advice.name}</span>
+      ${advice.text}
+    </div>
+  </div>`;
+}
+function dismissAdvisor(){
+  const el = document.getElementById('advisorWrap');
+  if(el) el.remove();
+}
+
+const SCORE_WEIGHTS = { pib: 1.0, desemprego: -1.0, inflacao: -0.5, confianca: 1.0, divida: -0.35, desigualdade: -0.8 };
+function computeScore(){
+  return (state.pib * SCORE_WEIGHTS.pib) + (state.desemprego * SCORE_WEIGHTS.desemprego)
+    + (state.inflacao * SCORE_WEIGHTS.inflacao) + (state.confianca * SCORE_WEIGHTS.confianca)
+    + (state.divida * SCORE_WEIGHTS.divida) + (state.desigualdade * SCORE_WEIGHTS.desigualdade);
+}
+function getEnding(){
+  const s = state;
+  if(s.inflacao >= 45){ return { title:"Colapso Hiperinflacionário", good:false,
+    desc:"O dinheiro perde valor mais rápido do que pode ser gasto. Preços mudam diariamente, salários viram pó e a população passa a negociar em outras moedas ou por troca direta. O Estado perdeu o controle da própria unidade de conta." }; }
+  if(s.divida >= 160){ return { title:"Calote da Dívida", good:false,
+    desc:"Os credores internacionais fecham as portas: o país não consegue mais rolar seus compromissos e declara moratória. O acesso a crédito externo desaparece por anos, e a reconstrução da confiança será lenta." }; }
+  if(s.desigualdade >= 85 && s.confianca <= 20){ return { title:"Revolta Popular", good:false,
+    desc:"A distância entre poucos muito ricos e uma maioria empobrecida se tornou insustentável. Greves gerais, protestos e panelaços tomam as ruas — o governo perdeu a legitimidade para seguir governando em nome de todos." }; }
+  if(s.pib <= 15){ return { title:"Economia em Ruínas", good:false,
+    desc:"Depois de sucessivas decisões que corroeram a produção do país, fábricas fecham, o comércio esvazia e o desemprego se torna crônico. O que resta é reconstruir, quase do zero, a capacidade produtiva nacional." }; }
+  if(s.desemprego >= 65){ return { title:"Crise do Desemprego em Massa", good:false,
+    desc:"Mais da metade da força de trabalho está sem ocupação formal. Filas em agências de emprego, informalidade crescente e uma geração inteira que entra no mercado de trabalho sem encontrar vagas." }; }
+  if(s.confianca <= 8){ return { title:"Governo Ilegítimo", good:false,
+    desc:"A população deixou de acreditar nas instituições. Mesmo indicadores tecnicamente aceitáveis não bastam: sem confiança, nenhuma política econômica consegue mais surtir efeito." }; }
+  if(s.desigualdade <= 15 && s.confianca >= 80 && s.pib >= 95){ return { title:"Era de Ouro do Bem-Estar", good:true,
+    desc:"Crescimento robusto dividido de forma ampla entre a população, serviços públicos fortes e confiança nas instituições. Um raro alinhamento entre prosperidade e coesão social — o tipo de resultado que poucos governos alcançam." }; }
+  const score = computeScore();
+  const tiers = [
+    { min: 150, title:"Milagre Econômico", good:true,
+      desc:"Os indicadores se alinharam quase perfeitamente: crescimento, emprego e confiança em alta, sem explosão de dívida ou desigualdade. Seu governo entra para os livros como um raro exemplo de gestão de crises." },
+    { min: 110, title:"Consolidação Sólida", good:true,
+      desc:"A economia atravessou as tempestades com cicatrizes administráveis. Não foi um governo perfeito, mas soube equilibrar custos de curto prazo com uma base mais estável para o futuro." },
+    { min: 80, title:"Recuperação Moderada", good:true,
+      desc:"Nem tudo saiu como planejado, mas o país evita os piores cenários. A economia segue de pé, ainda que com desafios importantes deixados para o próximo governo resolver." },
+    { min: 50, title:"Equilíbrio Precário", good:false,
+      desc:"O governo evitou um colapso evidente, mas às custas de tensões que continuam latentes: dívida elevada, desigualdade persistente ou desconfiança represada. A estabilidade é real, porém frágil, e não chega a ser um resultado positivo." },
+    { min: 20, title:"País em Convalescença", good:false,
+      desc:"A economia sobrevive, mas machucada. Anos de decisões difíceis deixaram marcas em pelo menos dois ou três indicadores centrais, e a recuperação plena ainda está longe." },
+    { min: -10, title:"Década de Estagnação", good:false,
+      desc:"Nem crescimento nem colapso: a economia trava em um patamar baixo, com desemprego persistente e confiança minada. Reformas estruturais serão necessárias para sair da inércia." },
+    { min: -45, title:"Crise Crônica", good:false,
+      desc:"Os desequilíbrios se acumularam: alguma combinação de dívida alta, inflação, desemprego e desigualdade corrói a economia de forma prolongada, sem um único evento causador, mas por acúmulo de escolhas." },
+    { min: -80, title:"Ajuste Traumático Necessário", good:false,
+      desc:"O país chega ao limite de sua capacidade de sustentar os próprios desequilíbrios. Um ajuste doloroso — fiscal, cambial ou social — se torna inevitável nos próximos anos." },
+    { min: -Infinity, title:"Espiral de Crises", good:false,
+      desc:"Uma crise alimentou a outra: cada decisão para conter um problema abriu espaço para o próximo. O país termina o período em pior estado do que começou, em praticamente todas as frentes." }
+  ];
+  for(const t of tiers){ if(score >= t.min) return { title:t.title, good:t.good, desc:t.desc }; }
+  return tiers[tiers.length-1];
+}
+
+let current = 0;
+let runScenarios = scenarios;
+let pendingSwan = null;
+const stage = document.getElementById('stage');
+const tickerWrap = document.getElementById('tickerWrap');
+const tickerEl = document.getElementById('ticker');
+const stampOverlay = document.getElementById('stampOverlay');
+const stampText = document.getElementById('stampText');
+const diffBadge = document.getElementById('diffBadge');
+
+function shuffleMiddleKeepEnds(arr){
+  const result = [...arr];
+  for(let i = result.length - 2; i > 1; i--){
+    const j = 1 + Math.floor(Math.random() * (i - 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+function dynamicEyebrow(s, position){
+  return s.eyebrow.replace(/^Crise \d+ de \d+/, `Crise ${position} de ${scenarios.length}`);
+}
+function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+function isHidden(key){ return difficulty === 'dificil' && HIDDEN_METRICS.includes(key); }
+const GameEngine = { clamp, applyDeltasToObj, scaleDeltasForDifficulty, currentSwanChance, computeScore, getEnding, getCrossMods };
+function renderProgressDots(currentIdOneIndexed){
+  const dots = scenarios.map((sc, idx) => {
+    const state_ = (idx + 1) < currentIdOneIndexed ? 'done' : (idx + 1) === currentIdOneIndexed ? 'current' : 'pending';
+    return `<span class="prog-dot prog-${state_}"></span>`;
+  }).join('');
+  return `<div class="progress-dots">${dots}</div>`;
+}
+
+const SOLO_SAVE_KEY = 'soloSave';
+async function saveSoloProgress(){
+  if(mpRoomCode) return;
+  try{
+    localStorage.setItem(SOLO_SAVE_KEY, JSON.stringify({
+      state, history, timeline, flags, difficulty, current,
+      runOrderIds: runScenarios.map(sc => sc.id)
+    }));
+  }catch(e){ /* silencioso: perder o save não deve travar o jogo */ }
+}
+async function loadSoloProgress(){
+  try{ const raw = localStorage.getItem(SOLO_SAVE_KEY); return raw ? JSON.parse(raw) : null; }
+  catch(e){ return null; }
+}
+async function clearSoloProgress(){
+  try{ localStorage.removeItem(SOLO_SAVE_KEY); }catch(e){ /* ok se não existir */ }
+}
+async function resumeSoloGame(){
+  const save = await loadSoloProgress();
+  if(!save) return;
+  difficulty = save.difficulty || 'facil';
+  state = save.state;
+  history = save.history || [];
+  timeline = save.timeline || [{...baseState}];
+  flags = save.flags || {};
+  current = save.current || 0;
+  runScenarios = (save.runOrderIds && save.runOrderIds.length === scenarios.length)
+    ? save.runOrderIds.map(id => scenarios.find(sc => sc.id === id)) : scenarios;
+  diffBadge.textContent = difficulty === 'dificil' ? 'MODO DIFÍCIL' : 'MODO FÁCIL';
+  diffBadge.style.display = 'inline-block';
+  renderTicker();
+  if(current >= scenarios.length){ renderHistory(); }
+  else{ renderScenario(); }
+}
+function escapeHtml(str){
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function renderTicker(){
+  const items = [
+    {key:'pib', lbl:'PIB', val: state.pib.toFixed(0)},
+    {key:'desemprego', lbl:'DESEMPREGO', val: clamp(state.desemprego,0,100).toFixed(0)+'%'},
+    {key:'inflacao', lbl:'INFLAÇÃO', val: state.inflacao.toFixed(0)+'%'},
+    {key:'confianca', lbl:'CONFIANÇA', val: clamp(state.confianca,0,100).toFixed(0)+'%'},
+    {key:'divida', lbl:'DÍVIDA PÚBLICA', val: clamp(state.divida,0,250).toFixed(0)+'%'},
+    {key:'desigualdade', lbl:'DESIGUALDADE', val: clamp(state.desigualdade,0,100).toFixed(0)+'%'}
+  ];
+  const html = items.map(i => {
+    const hidden = isHidden(i.key);
+    const val = hidden ? '?' : i.val;
+    return `<span class="tick-item${hidden ? ' hidden-metric' : ''}"><span class="lbl">${i.lbl}</span>${val}</span>`;
+  }).join('<span class="tick-item">•</span>');
+  const scoreItem = `<span class="tick-item"><span class="lbl">ÍNDICE GERAL</span>${computeScore().toFixed(0)}</span>`;
+  tickerEl.innerHTML = html + '<span class="tick-item">•</span>' + scoreItem + html;
+  tickerWrap.style.display = 'block';
+}
+async function renderModeSelect(){
+  mpStopPolling();
+  mpRoomCode = null; mpPlayerName = null; mpIsHost = false; mpMeta = null; mpState = null; mpMyVoteRound = null;
+  mpConsecutiveFails = 0; mpShowConnError(false);
+  tickerWrap.style.display = 'none';
+  diffBadge.style.display = 'none';
+  stage.innerHTML = `
+  <div class="card">
+    <span class="eyebrow">Bem-vindo ao gabinete</span>
+    <h2>Como você quer governar?</h2>
+    <p class="briefing">Enfrente sozinho dez crises históricas do capitalismo, ou reúna uma sala de jogadores para decidir juntos, por voto, o destino da economia.</p>
+    <button class="btn primary" onclick="renderIntro()">Jogar do zero, sozinho</button>
+    <button class="btn primary" style="margin-top:10px; background:var(--divida-c); border-color:var(--charcoal); color:var(--parchment);" onclick="renderMpEntry()">Sala multiplayer · Gabinete Coletivo</button>
+    <div id="progressSlot"></div>
+    <div id="resumeSlot"></div>
+  </div>`;
+  const progress = await getProgressSummary();
+  if(progress && progress.best){
+    const pSlot = document.getElementById('progressSlot');
+    if(pSlot){
+      pSlot.innerHTML = `
+      <div class="resume-banner" style="margin-top:14px;">
+        Seu recorde: ${escapeHtml(progress.best.title)} (índice ${progress.best.score.toFixed(0)})
+        · Partidas jogadas: ${progress.gamesPlayed}
+      </div>`;
+    }
+  }
+  const save = await loadSoloProgress();
+  if(save && save.current < scenarios.length){
+    const slot = document.getElementById('resumeSlot');
+    if(slot){
+      slot.innerHTML = `
+      <div class="resume-banner" style="margin-top:14px;">Você tem um governo em andamento (crise ${Math.min(save.current+1, scenarios.length)}/${scenarios.length}).</div>
+      <button class="btn ghost" onclick="resumeSoloGame()">Continuar jogo salvo</button>`;
+    }
+  }
+}
+function renderMpEntry(){
+  stage.innerHTML = `
+  <div class="card">
+    <span class="mp-mode-tag">Gabinete Coletivo · Multiplayer</span>
+    <h2>Governem juntos, votem em cada crise.</h2>
+    <p class="briefing">Crie uma sala e compartilhe o código com os outros jogadores, ou entre em uma sala existente. Todos enfrentam as mesmas 10 crises e votam na opção que o gabinete deve tomar — a mais votada vale para todo mundo.</p>
+    <span class="mp-label">Seu nome</span>
+    <input id="mpNameInput" class="mp-input" type="text" maxlength="18" placeholder="Ex: Presidente Silva">
+    <button class="btn primary" id="mpCreateBtn" onclick="mpCreateRoom()">Criar sala nova</button>
+    <div style="margin-top:16px; border-top:1px dashed rgba(42,36,28,0.25); padding-top:14px;">
+      <span class="mp-label">Código de uma sala existente</span>
+      <input id="mpCodeInput" class="mp-input code" type="text" maxlength="6" placeholder="CÓDIGO">
+      <button class="btn ghost" id="mpJoinBtn" onclick="mpJoinRoom()">Entrar na sala</button>
+    </div>
+    <div class="mp-error" id="mpEntryError"></div>
+    <button class="btn ghost" onclick="renderModeSelect()">Voltar</button>
+  </div>`;
+}
+function mpShowEntryError(msg){
+  const el = document.getElementById('mpEntryError');
+  if(el) el.textContent = msg;
+  else alert(msg);
+}
+function mpSetEntryBusy(busy, label){
+  const createBtn = document.getElementById('mpCreateBtn');
+  const joinBtn = document.getElementById('mpJoinBtn');
+  if(createBtn){ createBtn.disabled = busy; createBtn.textContent = busy ? (label || 'Criando sala…') : 'Criar sala nova'; }
+  if(joinBtn){ joinBtn.disabled = busy; joinBtn.textContent = busy ? (label || 'Entrando…') : 'Entrar na sala'; }
+}
+function mpSleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+// FIX BUG CRÍTICO + UX MOBILE: antes, se a escrita no storage falhasse uma
+// única vez (comum em redes de celular, que oscilam o tempo todo), o jogador
+// via um erro e tinha que clicar de novo manualmente — ou, na versão anterior
+// a essa, nem via erro nenhum e ficava travado sem explicação. Agora, em vez
+// de desistir na primeira falha, cada escrita/leitura crítica tenta de novo
+// sozinha várias vezes, com pausas crescentes (backoff exponencial), somando
+// quase 40 segundos de tentativas antes de qualquer coisa aparecer para o
+// jogador. Isso cobre até quedas de sinal mais longas (elevador, túnel,
+// trocar de wifi para dados móveis) sem incomodar ninguém — só nos casos bem
+// extremos de rede caída por muito tempo é que aparece um aviso no final.
+async function storSetRetry(key, value, attempts=10, baseDelayMs=400){
+  for(let i=0; i<attempts; i++){
+    const r = await storSet(key, value);
+    if(r) return r;
+    if(i < attempts-1) await mpSleep(Math.min(baseDelayMs * Math.pow(1.6, i), 6000));
+  }
+  return null;
+}
+async function storGetRetry(key, attempts=10, baseDelayMs=400){
+  for(let i=0; i<attempts; i++){
+    const r = await storGet(key);
+    if(r) return r;
+    if(i < attempts-1) await mpSleep(Math.min(baseDelayMs * Math.pow(1.6, i), 6000));
+  }
+  return null;
+}
+async function mpCreateRoom(){
+  const name = document.getElementById('mpNameInput').value.trim();
+  if(!name){ mpShowEntryError('Digite seu nome antes de criar a sala.'); return; }
+  mpShowEntryError('');
+  mpSetEntryBusy(true, 'Criando sala…');
+  const busyTicker = setInterval(() => {
+    const btn = document.getElementById('mpCreateBtn');
+    if(btn && btn.disabled) btn.textContent = 'Ainda tentando conectar…';
+  }, 3000);
+  mpCleanupOldRooms();
+  const code = mpGenCode();
+  const meta = { hostName:name, difficulty:'facil', createdAt: Date.now() };
+  const initialState = { phase:'lobby', current:0, econState:{...baseState}, flags:{}, history:[], timeline:[{...baseState}], roundStarted:0 };
+  const player = { name, joinedAt: Date.now(), lastSeen: Date.now() };
+
+  const rMeta = await storSetRetry(roomMetaKey(code), meta);
+  const rPlayer = await storSetRetry(roomPlayerKey(code, name), player);
+  const rState = await storSetRetry(roomStateKey(code), initialState);
+  clearInterval(busyTicker);
+
+  if(!rMeta || !rPlayer || !rState){
+    mpSetEntryBusy(false);
+    mpShowEntryError('A conexão está muito instável agora. Toque em "Criar sala nova" para tentar de novo.');
+    return;
+  }
+  const confirm = await storGetRetry(roomMetaKey(code));
+  if(!confirm){
+    mpSetEntryBusy(false);
+    mpShowEntryError('A conexão está muito instável agora. Toque em "Criar sala nova" para tentar de novo.');
+    return;
+  }
+  mpPlayerName = name; mpRoomCode = code; mpIsHost = true;
+  mpMeta = { ...meta, players:[name] };
+  mpState = initialState;
+  mpSetEntryBusy(false);
+  mpEnterLobby();
+}
+async function mpJoinRoom(){
+  const name = document.getElementById('mpNameInput').value.trim();
+  const code = document.getElementById('mpCodeInput').value.trim().toUpperCase();
+  if(!name || !code){ mpShowEntryError('Preencha seu nome e o código da sala.'); return; }
+  mpShowEntryError('');
+  mpSetEntryBusy(true, 'Entrando na sala…');
+  const busyTicker = setInterval(() => {
+    const btn = document.getElementById('mpJoinBtn');
+    if(btn && btn.disabled) btn.textContent = 'Ainda tentando conectar…';
+  }, 3000);
+  const meta = await storGetRetry(roomMetaKey(code));
+  if(!meta){
+    clearInterval(busyTicker);
+    mpSetEntryBusy(false);
+    mpShowEntryError('Sala não encontrada. Confira o código ou tente de novo.');
+    return;
+  }
+  const rPlayer = await storSetRetry(roomPlayerKey(code, name), { name, joinedAt: Date.now(), lastSeen: Date.now() });
+  clearInterval(busyTicker);
+  if(!rPlayer){
+    mpSetEntryBusy(false);
+    mpShowEntryError('A conexão está muito instável agora. Toque em "Entrar na sala" para tentar de novo.');
+    return;
+  }
+  mpMeta = meta; mpPlayerName = name; mpRoomCode = code; mpIsHost = (meta.hostName === name);
+  mpSetEntryBusy(false);
+  mpEnterLobby();
+}
+function mpEnterLobby(){
+  mpStopPolling();
+  mpPollTick = 0;
+  mpCachedPlayersFull = null;
+  mpPollTimer = setInterval(mpPoll, 2000);
+  mpPoll();
+}
+let mpPollTick = 0;
+let mpCachedPlayersFull = null;
+async function mpPoll(){
+  if(!mpRoomCode) return;
+  try{
+    mpPollTick++;
+    const shouldFetchPlayers = !mpCachedPlayersFull || (mpPollTick % 2 === 1);
+    const myRecord = await storGet(roomPlayerKey(mpRoomCode, mpPlayerName));
+    await storSet(roomPlayerKey(mpRoomCode, mpPlayerName), {
+      name: mpPlayerName, joinedAt: (myRecord && myRecord.joinedAt) || Date.now(), lastSeen: Date.now()
+    });
+    const [meta, st, playersFull] = await Promise.all([
+      storGet(roomMetaKey(mpRoomCode)),
+      storGet(roomStateKey(mpRoomCode)),
+      shouldFetchPlayers ? mpGetPlayersFull(mpRoomCode) : Promise.resolve(mpCachedPlayersFull)
+    ]);
+    if(shouldFetchPlayers) mpCachedPlayersFull = playersFull;
+    if(!meta || !st){
+      mpConsecutiveFails++;
+      if(mpConsecutiveFails >= MP_FAIL_THRESHOLD) mpShowConnError(true);
+      return;
+    }
+    mpConsecutiveFails = 0;
+    mpShowConnError(false);
+    mpMeta = meta;
+    mpMeta.players = playersFull.map(p => p.name).sort((a,b) => a.localeCompare(b));
+    mpIsHost = (meta.hostName === mpPlayerName);
+    mpState = st;
+    const hostRecord = playersFull.find(p => p.name === meta.hostName);
+    const hostStale = !hostRecord || (Date.now() - (hostRecord.lastSeen || 0)) > MP_HOST_TIMEOUT_MS;
+    if(hostStale){
+      const active = playersFull.filter(p => (Date.now() - (p.lastSeen || 0)) <= MP_HOST_TIMEOUT_MS);
+      active.sort((a,b) => (a.joinedAt||0) - (b.joinedAt||0));
+      const nextHost = active[0];
+      if(nextHost && nextHost.name === mpPlayerName && meta.hostName !== mpPlayerName){
+        mpMeta.hostName = mpPlayerName;
+        mpIsHost = true;
+        await storSet(roomMetaKey(mpRoomCode), { hostName: mpPlayerName, difficulty: meta.difficulty, createdAt: meta.createdAt });
+      }
+    }
+    if(mpIsHost && mpState.phase === 'voting'){
+      await mpHostCheckVotes();
+    }
+    switch(mpState.phase){
+      case 'lobby': mpRenderLobby(); break;
+      case 'voting': await mpRenderVoting(); break;
+      case 'reveal': mpRenderReveal(); break;
+      case 'swan_reveal': mpRenderSwanReveal(); break;
+      case 'final': mpStopPolling(); mpFinishToSolo(); break;
+      default: mpRenderLobby();
+    }
+  }catch(e){
+    mpConsecutiveFails++;
+    if(mpConsecutiveFails >= MP_FAIL_THRESHOLD) mpShowConnError(true);
+  }
+}
+function mpRenderLobby(){
+  diffBadge.style.display = 'none';
+  tickerWrap.style.display = 'none';
+  const playersHtml = mpMeta.players.map(p => `<li>${escapeHtml(p)}${p === mpMeta.hostName ? '<span class="p-host">ANFITRIÃO</span>' : ''}</li>`).join('');
+  const diffControls = mpIsHost ? `
+    <span class="mp-label">Dificuldade (só o anfitrião escolhe)</span>
+    <div class="diff-pick">
+      <div class="diff-opt${mpMeta.difficulty==='facil' ? ' selected' : ''}" onclick="mpSetDifficulty('facil')"><b>Fácil</b><span>Todos os indicadores visíveis.</span></div>
+      <div class="diff-opt${mpMeta.difficulty==='dificil' ? ' selected' : ''}" onclick="mpSetDifficulty('dificil')"><b>Difícil</b><span>Inflação, dívida e desigualdade ocultas.</span></div>
+    </div>
+    <button class="btn primary" onclick="mpHostStart()">Iniciar jogo para todos</button>`
+    : `<div class="vote-status">Aguardando o anfitrião (${escapeHtml(mpMeta.hostName)}) iniciar o jogo…</div>`;
+  stage.innerHTML = `
+  <div class="card">
+    <span class="mp-mode-tag">Sala de espera</span>
+    <h2>Compartilhe este código:</h2>
+    <div class="room-code-display">${mpRoomCode}</div>
+    <span class="mp-label">Jogadores na sala (${mpMeta.players.length})</span>
+    <ul class="player-list">${playersHtml}</ul>
+    ${diffControls}
+    <button class="btn ghost" onclick="renderModeSelect()">Sair da sala</button>
+  </div>`;
+}
+async function mpSetDifficulty(d){
+  if(!mpIsHost) return;
+  mpMeta.difficulty = d;
+  await storSet(roomMetaKey(mpRoomCode), { hostName:mpMeta.hostName, difficulty:d, createdAt: mpMeta.createdAt });
+  mpRenderLobby();
+}
+async function mpHostStart(){
+  if(!mpIsHost) return;
+  mpState.phase = 'voting';
+  mpState.current = 0;
+  mpState.roundStarted = Date.now();
+  await storSet(roomStateKey(mpRoomCode), mpState);
+  await mpPoll();
+}
+async function mpRenderVoting(){
+  difficulty = mpMeta.difficulty;
+  state = mpState.econState;
+  flags = mpState.flags;
+  diffBadge.textContent = difficulty === 'dificil' ? 'MODO DIFÍCIL' : 'MODO FÁCIL';
+  diffBadge.style.display = 'inline-block';
+  renderTicker();
+  const s = scenarios[mpState.current];
+  const mods = getCrossMods(s);
+  const hiddenHint = difficulty === 'dificil'
+    ? `<div class="hidden-hint">Inflação, dívida e desigualdade estão ocultas nesta crise.</div>` : '';
+  const voteKeys = await storList(roomVotePrefix(mpRoomCode, mpState.current));
+  const votedNames = voteKeys.map(k => k.split(':').pop());
+  const iVoted = mpMyVoteRound === mpState.current;
+  const optionsHtml = s.options.map((opt, i) => {
+    const mod = mods[i];
+    const disabled = (mod && mod.disabled) || iVoted;
+    const tagHtml = difficulty === 'dificil'
+      ? `<span class="opt-tag">Consequência incerta — avalie pelo contexto histórico</span>`
+      : `<span class="opt-tag">${opt.tag}</span>`;
+    return `
+    <button class="opt${disabled ? ' disabled' : ''}" ${disabled ? 'disabled' : `onclick="mpCastVote(${i})"`}>
+      <span class="opt-name">${opt.name}</span>
+      ${tagHtml}
+      ${mod && mod.note ? `<span class="opt-warn">${mod.disabled ? '🔒 ' : '⚠ '}${mod.note}</span>` : ''}
+    </button>`;
+  }).join('');
+  stage.innerHTML = `
+  <div class="card">
+    ${renderAdvisor()}
+    <div class="progress">CRISE ${s.id} / ${scenarios.length} · SALA ${mpRoomCode}</div>
+    ${renderProgressDots(s.id)}
+    <span class="eyebrow">${s.eyebrow} · ${s.data}</span>
+    <h2>Como o gabinete vai votar?</h2>
+    <p class="briefing">${s.briefing}</p>
+    ${hiddenHint}
+    ${optionsHtml}
+    <div class="vote-status">${iVoted ? 'Voto registrado — ' : ''}${votedNames.length}/${mpMeta.players.length} jogadores votaram (${votedNames.map(escapeHtml).join(', ') || '—'})</div>
+  </div>`;
+}
+async function mpCastVote(i){
+  const s = scenarios[mpState.current];
+  const mods = getCrossMods(s);
+  if(mods[i] && mods[i].disabled) return;
+  mpMyVoteRound = mpState.current;
+  await storSet(roomVoteKey(mpRoomCode, mpState.current, mpPlayerName), i);
+  await mpRenderVoting();
+}
+async function mpHostCheckVotes(){
+  difficulty = mpMeta.difficulty;
+  const s = scenarios[mpState.current];
+  const voteKeys = await storList(roomVotePrefix(mpRoomCode, mpState.current));
+  const voteResults = await Promise.all(voteKeys.map(k => storGet(k)));
+  const votes = voteResults.filter(v => v !== null);
+  const totalPlayers = mpMeta.players.length;
+  const elapsed = Date.now() - (mpState.roundStarted || Date.now());
+  if(votes.length < totalPlayers && elapsed < MP_ROUND_TIMEOUT_MS) return;
+  const s2 = scenarios[mpState.current];
+  const mods2 = getCrossMods(s2);
+  const validIdx = s2.options.map((_,i) => i).filter(i => !(mods2[i] && mods2[i].disabled));
+  const tally = new Array(s2.options.length).fill(0);
+  votes.forEach(idx => { if(tally[idx] !== undefined) tally[idx]++; });
+  let winner = 0, max = -1;
+  if(votes.length > 0){
+    tally.forEach((c,i) => { if(c > max){ max = c; winner = i; } });
+  } else {
+    const pool = validIdx.length > 0 ? validIdx : s2.options.map((_,i)=>i);
+    winner = pool[Math.floor(Math.random()*pool.length)];
+  }
+  const mods = getCrossMods(s);
+  const mod = mods[winner];
+  const opt = s.options[winner];
+  const combinedDeltas = scaleDeltasForDifficulty({...opt.deltas});
+  if(mod && mod.extraDeltas){
+    for(const k in mod.extraDeltas) combinedDeltas[k] = (combinedDeltas[k]||0) + mod.extraDeltas[k];
+  }
+  applyDeltasToObj(mpState.econState, combinedDeltas);
+  if(Array.isArray(opt.sets)) opt.sets.forEach(f => { mpState.flags[f] = true; });
+  mpState.timeline.push({...mpState.econState});
+  mpState.history.push({
+    type:'crisis', eyebrow:s.eyebrow, data:s.data, choice:opt.name, tag:opt.tag, note:opt.note,
+    deltas:combinedDeltas, crossNote: mod ? mod.note : null,
+    tally, totalVoters: votes.length, players: mpMeta.players.length
+  });
+  mpState.phase = 'reveal';
+  mpState.revealData = { winner, tally, votedCount: votes.length, totalPlayers };
+  const freshState = await storGet(roomStateKey(mpRoomCode));
+  if(freshState && (freshState.phase !== 'voting' || freshState.current !== mpState.current)){
+    return;
+  }
+  await storSet(roomStateKey(mpRoomCode), mpState);
+}
+function mpRenderReveal(){
+  difficulty = mpMeta.difficulty;
+  state = mpState.econState;
+  const s = scenarios[mpState.current];
+  const h = mpState.history[mpState.history.length - 1];
+  const opt = s.options[mpState.revealData.winner];
+  const deltaChips = Object.entries(h.deltas).map(([k,v]) => fmtDelta(k,v)).filter(Boolean).join('');
+  const maxVotes = Math.max(1, ...mpState.revealData.tally);
+  const tallyHtml = s.options.map((o,i) => `
+    <div class="tally-row">
+      <div class="tally-label"><span>${o.name}</span><span>${mpState.revealData.tally[i]} voto(s)</span></div>
+      <div class="tally-track"><div class="tally-fill" style="width:${(mpState.revealData.tally[i]/maxVotes*100).toFixed(0)}%"></div></div>
+    </div>`).join('');
+  const advanceCtrl = mpIsHost
+    ? `<button class="btn primary" onclick="mpHostAdvance()">${mpState.current < scenarios.length-1 ? 'Avançar para a próxima crise' : 'Ver o veredito final'}</button>`
+    : `<div class="vote-status">Aguardando o anfitrião avançar…</div>`;
+  stage.innerHTML = `
+  <div class="card">
+    <div class="progress">CRISE ${s.id} / ${scenarios.length} · RESULTADO DA VOTAÇÃO · SALA ${mpRoomCode}</div>
+    ${renderProgressDots(s.id)}
+    <span class="eyebrow">${s.eyebrow} · ${s.data}</span>
+    <h2>Venceu: ${opt.name}</h2>
+    ${tallyHtml}
+    <div class="delta-row" style="margin-top:14px;">${deltaChips}</div>
+    ${h.crossNote ? `<div class="cross-note"><b>Consequência de decisões passadas:</b> ${h.crossNote}</div>` : ''}
+    <div class="history-note"><b>O que a história registrou:</b> ${opt.note}</div>
+    ${advanceCtrl}
+  </div>`;
+}
+async function mpHostAdvance(){
+  if(!mpIsHost) return;
+  difficulty = mpMeta.difficulty;
+  const nextIndex = mpState.current + 1;
+  if(nextIndex >= scenarios.length){
+    mpState.phase = 'final';
+    await storSet(roomStateKey(mpRoomCode), mpState);
+    await mpPoll();
+    return;
+  }
+  if(Math.random() < currentSwanChance()){
+    const evRaw = swanEvents[Math.floor(Math.random()*swanEvents.length)];
+    mpState.pendingSwanEvent = { ...evRaw, deltas: scaleDeltasForDifficulty(evRaw.deltas) };
+    mpState.phase = 'swan_reveal';
+    mpState.pendingNext = nextIndex;
+  } else {
+    mpState.current = nextIndex;
+    mpState.phase = 'voting';
+    mpState.roundStarted = Date.now();
+  }
+  await storSet(roomStateKey(mpRoomCode), mpState);
+  await mpPoll();
+}
+function mpRenderSwanReveal(){
+  const ev = mpState.pendingSwanEvent;
+  const deltaChips = Object.entries(ev.deltas).map(([k,v]) => fmtDelta(k,v)).filter(Boolean).join('');
+  const advanceCtrl = mpIsHost
+    ? ev.responses.map((r,i) => `<button class="opt" onclick="mpHostSwanResponse(${i})"><span class="opt-name">${r.label}</span></button>`).join('')
+    : `<div class="vote-status">Aguardando a decisão do anfitrião…</div>`;
+  stage.innerHTML = `
+  <div class="card">
+    <span class="eyebrow swan-eyebrow">Evento Inesperado · Cisne Negro · SALA ${mpRoomCode}</span>
+    <span class="swan-icon">${SWAN_ICONS[ev.icon] || ''}</span>
+    <h2>${ev.title}</h2>
+    <p class="briefing">${ev.text}</p>
+    <div class="delta-row">${deltaChips}</div>
+    <p class="briefing" style="margin:12px 0 8px; font-size:0.85rem;">${mpIsHost ? 'Como o gabinete reage a isso?' : ''}</p>
+    ${advanceCtrl}
+  </div>`;
+}
+async function mpHostSwanResponse(i){
+  if(!mpIsHost) return;
+  const ev = mpState.pendingSwanEvent;
+  const resp = ev.responses[i];
+  const combined = {...ev.deltas};
+  const scaledExtra = scaleDeltasForDifficulty(resp.extraDeltas);
+  for(const k in scaledExtra){ combined[k] = (combined[k]||0) + scaledExtra[k]; }
+  applyDeltasToObj(mpState.econState, combined);
+  mpState.timeline.push({...mpState.econState});
+  mpState.history.push({ type:'swan', title:ev.title, text:ev.text, deltas:combined, response:resp.label });
+  mpState.current = mpState.pendingNext;
+  mpState.phase = 'voting';
+  mpState.roundStarted = Date.now();
+  delete mpState.pendingNext;
+  delete mpState.pendingSwanEvent;
+  await storSet(roomStateKey(mpRoomCode), mpState);
+  await mpPoll();
+}
+function mpFinishToSolo(){
+  difficulty = mpMeta.difficulty;
+  state = mpState.econState;
+  flags = mpState.flags;
+  history = mpState.history;
+  timeline = mpState.timeline;
+  current = scenarios.length - 1;
+  renderHistory();
+}
+function renderIntro(){
+  tickerWrap.style.display = 'none';
+  diffBadge.style.display = 'none';
+  stage.innerHTML = `
+  <div class="card">
+    <span class="eyebrow">Briefing inicial</span>
+    <h2>Você acaba de assumir o governo.</h2>
+    <p class="briefing">Dez crises históricas do capitalismo vão bater à sua porta, uma a uma — da quebra de 1929 à pandemia de 2020. Cada decisão move seis indicadores: PIB, desemprego, inflação, confiança popular, dívida pública e desigualdade. Decisões antigas podem tornar certas saídas mais caras ou até indisponíveis mais à frente, e eventos imprevistos vão testar se sua economia é resiliente ou frágil. No fim, seu governo recebe um veredito entre mais de uma dezena de desfechos possíveis.</p>
+    <p class="briefing" style="margin-bottom:8px;">Escolha o nível de dificuldade:</p>
+    <div class="diff-pick">
+      <div class="diff-opt" onclick="startGame('facil')">
+        <b>Fácil</b>
+        <span>Todos os 6 indicadores visíveis o tempo todo.</span>
+      </div>
+      <div class="diff-opt" onclick="startGame('dificil')">
+        <b>Difícil</b>
+        <span>Inflação, dívida e desigualdade ficam ocultas até o fim de cada crise.</span>
+      </div>
+    </div>
+  </div>`;
+}
+function startGame(chosenDifficulty){
+  difficulty = chosenDifficulty || 'facil';
+  diffBadge.textContent = difficulty === 'dificil' ? 'MODO DIFÍCIL' : 'MODO FÁCIL';
+  diffBadge.style.display = 'inline-block';
+  current = 0;
+  runScenarios = shuffleMiddleKeepEnds(scenarios);
+  state = {...baseState};
+  history = [];
+  timeline = [{...baseState}];
+  flags = {};
+  pendingSwan = null;
+  renderTicker();
+  renderScenario();
+  saveSoloProgress();
+}
+function getCrossMods(s){
+  if(typeof s.crossEffects !== 'function') return {};
+  try{ return s.crossEffects({state, flags}) || {}; }
+  catch(e){ return {}; }
+}
+function renderScenario(){
+  saveSoloProgress();
+  const s = runScenarios[current];
+  const mods = getCrossMods(s);
+  const hiddenHint = difficulty === 'dificil'
+    ? `<div class="hidden-hint">Inflação, dívida e desigualdade estão ocultas nesta crise — você só vê parte do quadro.</div>`
+    : '';
+  stage.innerHTML = `
+  <div class="card">
+    ${renderAdvisor()}
+    <div class="progress">CRISE ${current+1} / ${scenarios.length}</div>
+    ${renderProgressDots(current+1)}
+    <span class="eyebrow">${dynamicEyebrow(s, current+1)} · ${s.data}</span>
+    <h2>Como seu gabinete vai reagir?</h2>
+    <p class="briefing">${s.briefing}</p>
+    ${hiddenHint}
+    ${s.options.map((opt, i) => {
+      const mod = mods[i];
+      const disabled = mod && mod.disabled;
+      const tagHtml = difficulty === 'dificil'
+        ? `<span class="opt-tag">Consequência incerta — avalie pelo contexto histórico</span>`
+        : `<span class="opt-tag">${opt.tag}</span>`;
+      return `
+      <button class="opt${disabled ? ' disabled' : ''}" ${disabled ? 'disabled' : `onclick="choose(${i})"`}>
+        <span class="opt-name">${opt.name}</span>
+        ${tagHtml}
+        ${mod && mod.note ? `<span class="opt-warn">${disabled ? '🔒 ' : '⚠ '}${mod.note}</span>` : ''}
+      </button>`;
+    }).join('')}
+  </div>`;
+}
+function fmtDelta(key, val){
+  if(val === 0) return null;
+  if(isHidden(key)) return `<span class="delta">${({inflacao:'Inflação',divida:'Dívida',desigualdade:'Desigualdade'})[key]} ?</span>`;
+  const sign = val > 0 ? '+' : '';
+  const badIsUp = (key === 'desemprego' || key === 'inflacao' || key === 'divida' || key === 'desigualdade');
+  const cls = badIsUp ? (val > 0 ? 'down' : 'up') : (val > 0 ? 'up' : 'down');
+  const labels = {pib:'PIB', desemprego:'Desemprego', inflacao:'Inflação', confianca:'Confiança', divida:'Dívida', desigualdade:'Desigualdade'};
+  return `<span class="delta ${cls}">${labels[key]} ${sign}${val}</span>`;
+}
+function choose(i){
+  const s = runScenarios[current];
+  const mods = getCrossMods(s);
+  const mod = mods[i];
+  if(mod && mod.disabled) return;
+  const opt = s.options[i];
+  playClickSound();
+  if(navigator.vibrate) navigator.vibrate(35);
+  stampText.textContent = "DECIDIDO";
+  stampOverlay.classList.add('show');
+  setTimeout(playStampSound, 40);
+  setTimeout(() => { stampOverlay.classList.remove('show'); }, 700);
+  const combinedDeltas = scaleDeltasForDifficulty({...opt.deltas});
+  if(mod && mod.extraDeltas){
+    for(const k in mod.extraDeltas){ combinedDeltas[k] = (combinedDeltas[k] || 0) + mod.extraDeltas[k]; }
+  }
+  applyDeltasToObj(state, combinedDeltas);
+  renderTicker();
+  if(Array.isArray(opt.sets)){ opt.sets.forEach(f => { flags[f] = true; }); }
+  history.push({
+    type:'crisis', eyebrow: dynamicEyebrow(s, current+1), data: s.data,
+    choice: opt.name, tag: opt.tag, note: opt.note, deltas: combinedDeltas,
+    crossNote: mod ? mod.note : null
+  });
+  timeline.push({...state});
+  setTimeout(() => {
+    const deltaChips = Object.entries(combinedDeltas).map(([k,v]) => fmtDelta(k,v)).filter(Boolean).join('');
+    stage.innerHTML = `
+    <div class="card">
+      <div class="progress">CRISE ${current+1} / ${scenarios.length} · DECISÃO REGISTRADA</div>
+      ${renderProgressDots(current+1)}
+      <span class="eyebrow">${dynamicEyebrow(s, current+1)} · ${s.data}</span>
+      <h2>${opt.name}</h2>
+      <div class="delta-row">${deltaChips}</div>
+      ${mod && mod.note ? `<div class="cross-note"><b>Consequência de decisões passadas:</b> ${mod.note}</div>` : ''}
+      <div class="history-note"><b>O que a história registrou:</b> ${opt.note}</div>
+      <button class="btn primary" onclick="advance()">${current < scenarios.length - 1 ? 'Enfrentar a próxima crise' : 'Ver o histórico do governo'}</button>
+    </div>`;
+  }, 550);
+}
+function advance(){
+  current++;
+  if(current >= scenarios.length){ renderHistory(); return; }
+  if(Math.random() < currentSwanChance()){ renderSwanEvent(); } else { renderScenario(); }
+}
+let pendingSwanEv = null;
+function renderSwanEvent(){
+  const evRaw = swanEvents[Math.floor(Math.random()*swanEvents.length)];
+  const ev = { ...evRaw, deltas: scaleDeltasForDifficulty(evRaw.deltas) };
+  playSwanSound();
+  pendingSwanEv = ev;
+  const deltaChips = Object.entries(ev.deltas).map(([k,v]) => fmtDelta(k,v)).filter(Boolean).join('');
+  const respHtml = ev.responses.map((r, i) => `
+    <button class="opt" onclick="chooseSwanResponse(${i})">
+      <span class="opt-name">${r.label}</span>
+    </button>`).join('');
+  stage.innerHTML = `
+  <div class="card">
+    <span class="eyebrow swan-eyebrow">Evento Inesperado · Cisne Negro</span>
+    <span class="swan-icon">${SWAN_ICONS[ev.icon] || ''}</span>
+    <h2>${ev.title}</h2>
+    <p class="briefing">${ev.text}</p>
+    <div class="delta-row">${deltaChips}</div>
+    <p class="briefing" style="margin:12px 0 8px; font-size:0.85rem;">Como seu gabinete reage a isso?</p>
+    ${respHtml}
+  </div>`;
+}
+function chooseSwanResponse(i){
+  const ev = pendingSwanEv;
+  if(!ev){ renderScenario(); return; }
+  const resp = ev.responses[i];
+  const combined = {...ev.deltas};
+  const scaledExtra = scaleDeltasForDifficulty(resp.extraDeltas);
+  for(const k in scaledExtra){ combined[k] = (combined[k]||0) + scaledExtra[k]; }
+  applyDeltasToObj(state, combined);
+  renderTicker();
+  timeline.push({...state});
+  history.push({ type:'swan', title: ev.title, text: ev.text, deltas: combined, response: resp.label });
+  saveSoloProgress();
+  pendingSwanEv = null;
+  renderScenario();
+}
+function renderHistory(){
+  const items = history.map(h => {
+    if(h.type === 'swan'){
+      return `<li><span class="h-swan">Evento inesperado</span><span class="h-choice">${h.title}</span><span>${h.text}${h.response ? ` — Resposta do gabinete: ${h.response}` : ''}</span></li>`;
+    }
+    return `<li><span class="h-crisis">${h.eyebrow}</span><span class="h-choice">${h.choice}</span><span>${h.tag}</span></li>`;
+  }).join('');
+  stage.innerHTML = `
+  <div class="card">
+    <span class="eyebrow">Histórico de Decisões</span>
+    <h2>Foi assim que seu gabinete governou.</h2>
+    <ul class="hist-list">${items}</ul>
+    <button class="btn primary" onclick="renderFinal()">Conhecer o veredito final</button>
+  </div>`;
+}
+function buildTimelineChart(){
+  const metrics = [
+    { key:'pib', label:'PIB', max:200, color:'var(--gold)' },
+    { key:'desemprego', label:'Desemprego', max:100, color:'var(--crisis)' },
+    { key:'inflacao', label:'Inflação', max:100, color:'var(--inflacao-c)' },
+    { key:'confianca', label:'Confiança', max:100, color:'var(--growth)' },
+    { key:'divida', label:'Dívida', max:250, color:'var(--divida-c)' },
+    { key:'desigualdade', label:'Desigualdade', max:100, color:'var(--desig-c)' }
+  ];
+  const W = 620, H = 200, padL = 8, padR = 8, padT = 10, padB = 10;
+  const n = timeline.length;
+  const stepX = (W - padL - padR) / Math.max(1, n - 1);
+  const toY = (val, max) => padT + (1 - clamp(val,0,max)/max) * (H - padT - padB);
+  const lines = metrics.map(m => {
+    const pts = timeline.map((pt, i) => `${(padL + i*stepX).toFixed(1)},${toY(pt[m.key], m.max).toFixed(1)}`).join(' ');
+    return `<polyline points="${pts}" fill="none" stroke="${m.color}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" opacity="0.92"/>`;
+  }).join('');
+  const pointLabel = (i) => {
+    if(i === 0) return 'Início do governo';
+    const h = history[i-1];
+    if(!h) return `Ponto ${i}`;
+    return h.type === 'swan' ? `Evento: ${h.title}` : h.eyebrow;
+  };
+  const points = metrics.map(m => timeline.map((pt, i) => {
+    const cx = (padL + i*stepX).toFixed(1);
+    const cy = toY(pt[m.key], m.max).toFixed(1);
+    const val = clamp(pt[m.key], -9999, 9999).toFixed(0);
+    return `<circle cx="${cx}" cy="${cy}" r="6" fill="transparent" stroke="none" style="cursor:pointer"><title>${escapeHtml(pointLabel(i))} — ${m.label}: ${val}</title></circle>`;
+  }).join('')).join('');
+  const legend = metrics.map(m => `<span><i style="background:${m.color}"></i>${m.label}</span>`).join('');
+  return `
+  <div class="chart-wrap">
+    <svg viewBox="0 0 ${W} ${H}" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">
+      <line x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}" stroke="rgba(42,36,28,0.25)" stroke-width="1"/>
+      ${lines}
+      ${points}
+    </svg>
+    <div class="chart-legend">${legend}</div>
+  </div>`;
+}
+let currentEnding = null;
+function shareResult(){
+  const ending = currentEnding;
+  if(!ending) return;
+  const linhas = history.map((h,i) => h.type === 'swan' ? `${i+1}. [evento] ${h.title}` : `${i+1}. ${h.choice}`).join('\n');
+  const texto = `Presidente por um Dia — meu governo terminou em: ${ending.title}\n`
+    + `Modo: ${difficulty === 'dificil' ? 'Difícil' : 'Fácil'}\n\n`
+    + `PIB: ${state.pib.toFixed(0)} · Desemprego: ${clamp(state.desemprego,0,100).toFixed(0)}% · Inflação: ${state.inflacao.toFixed(0)}%\n`
+    + `Confiança: ${clamp(state.confianca,0,100).toFixed(0)}% · Dívida: ${clamp(state.divida,0,300).toFixed(0)}% · Desigualdade: ${clamp(state.desigualdade,0,100).toFixed(0)}%\n\n`
+    + `Decisões tomadas:\n${linhas}`;
+  const feedbackEl = document.getElementById('shareFeedback');
+  if(navigator.share){
+    navigator.share({ title:'Presidente por um Dia', text: texto }).catch(() => {});
+    return;
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(texto).then(() => {
+      if(feedbackEl) feedbackEl.textContent = 'Resultado copiado para a área de transferência!';
+    }).catch(() => {
+      if(feedbackEl) feedbackEl.textContent = 'Não foi possível copiar automaticamente.';
+    });
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = texto;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try{ document.execCommand('copy'); if(feedbackEl) feedbackEl.textContent = 'Resultado copiado para a área de transferência!'; }
+    catch(e){ if(feedbackEl) feedbackEl.textContent = 'Não foi possível copiar automaticamente.'; }
+    document.body.removeChild(ta);
+  }
+}
+const PROGRESS_KEY = 'progressSummary';
+async function updateProgressSummary(score, title, diffc){
+  let summary = { gamesPlayed: 0, best: null };
+  try{
+    const raw = localStorage.getItem(PROGRESS_KEY);
+    if(raw) summary = JSON.parse(raw);
+  }catch(e){ /* sem histórico ainda */ }
+  summary.gamesPlayed = (summary.gamesPlayed || 0) + 1;
+  const isNewBest = !summary.best || score > summary.best.score;
+  if(isNewBest){ summary.best = { score, title, difficulty: diffc, date: Date.now() }; }
+  try{ localStorage.setItem(PROGRESS_KEY, JSON.stringify(summary)); }catch(e){ /* silencioso */ }
+  return { ...summary, isNewBest };
+}
+async function getProgressSummary(){
+  try{ const raw = localStorage.getItem(PROGRESS_KEY); return raw ? JSON.parse(raw) : null; }
+  catch(e){ return null; }
+}
+async function renderFinal(){
+  clearSoloProgress();
+  const ending = getEnding();
+  currentEnding = ending;
+  playEndingSound(ending.good);
+  const finalScore = computeScore();
+  const progress = await updateProgressSummary(finalScore, ending.title, difficulty);
+  const bars = [
+    { key:'pib', label:'PIB', val: clamp(state.pib,0,200), max:200, good: state.pib >= 90 },
+    { key:'desemprego', label:'Desemprego', val: clamp(state.desemprego,0,100), max:100, good: state.desemprego <= 15 },
+    { key:'inflacao', label:'Inflação', val: clamp(state.inflacao,0,100), max:100, good: state.inflacao <= 10 },
+    { key:'confianca', label:'Confiança popular', val: clamp(state.confianca,0,100), max:100, good: state.confianca >= 50 },
+    { key:'divida', label:'Dívida pública', val: clamp(state.divida,0,250), max:250, good: state.divida <= 90 },
+    { key:'desigualdade', label:'Desigualdade', val: clamp(state.desigualdade,0,100), max:100, good: state.desigualdade <= 45 }
+  ];
+  const barsHtml = bars.map(b => `
+  <div class="bar-row">
+    <div class="bar-label"><span>${b.label}</span><span>${b.val.toFixed(0)}</span></div>
+    <div class="bar-track"><div class="bar-fill" style="width:${(b.val/b.max*100).toFixed(1)}%; background:${b.good ? 'var(--growth)' : 'var(--crisis)'}"></div></div>
+  </div>`).join('');
+  stage.innerHTML = `
+  <div class="card">
+    <span class="eyebrow">Veredito final</span>
+    <div class="final-title">${ending.title}</div>
+    <div class="final-sub">${ending.good ? 'Desfecho positivo' : 'Desfecho negativo'} · Modo ${difficulty === 'dificil' ? 'Difícil' : 'Fácil'}</div>
+    <p class="final-desc">${ending.desc}</p>
+    <div class="resume-banner">${progress.isNewBest
+      ? `🏆 Novo recorde pessoal! Índice geral: ${finalScore.toFixed(0)}`
+      : `Seu recorde: ${escapeHtml(progress.best.title)} (índice ${progress.best.score.toFixed(0)})`}
+      · Partidas jogadas: ${progress.gamesPlayed}</div>
+    ${buildTimelineChart()}
+    ${barsHtml}
+    <button class="btn primary" onclick="renderModeSelect()">Assumir o gabinete novamente</button>
+    <button class="btn ghost" onclick="renderHistory()">Rever histórico de decisões</button>
+    <button class="btn ghost" onclick="shareResult()">Compartilhar resultado</button>
+    <div class="share-feedback" id="shareFeedback"></div>
+  </div>`;
+}
+
+renderModeSelect();
+</script>
+</body>
+</html>
