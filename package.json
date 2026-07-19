@@ -1,0 +1,13 @@
+{
+  "name": "presidente-por-um-dia-mp-server",
+  "version": "1.0.0",
+  "description": "Servidor de chave/valor (compativel com window.storage) para o multiplayer de Presidente por um Dia",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {}
+}
